@@ -1,0 +1,4 @@
+*** Click & Pledge Changelog ***
+
+2014.01.10 - version 1.0.1
+ * Code Released to public
