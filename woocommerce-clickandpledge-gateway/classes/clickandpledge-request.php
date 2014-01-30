@@ -19,12 +19,7 @@ class clickandpledge_request {
 	public function send($settings, $post, $order) {
 		
 		$strParam =  $this->buildXML( $settings, $post, $order );
-		//echo '<pre>';
-		//print_r($order);
-		//print_r($order->get_items());
-		//print_r($order->get_item_meta());
-		//echo $strParam;
-		//die();
+		
 		$connect = array('soap_version' => SOAP_1_1, 'trace' => 1, 'exceptions' => 0);
 		 $client = new SoapClient('https://paas.cloud.clickandpledge.com/paymentservice.svc?wsdl', $connect);
 		 $soapParams = array('instruction'=>$strParam);
@@ -110,12 +105,7 @@ class clickandpledge_request {
 	{
 		$configValues = $settings;
 		$params = $post;
-		//echo '<pre>';
-		//print_r($settings);
-		//print_r($post);
-		//print_r($orderplaced);
-		//print_r($orderplaced->get_used_coupons());
-		//die();
+
 		$dom = new DOMDocument('1.0', 'UTF-8');
 		$root = $dom->createElement('CnPAPI', '');
 		$root->setAttribute("xmlns","urn:APISchema.xsd");
@@ -136,7 +126,7 @@ class clickandpledge_request {
 		$applicationname=$dom->createElement('Name','CnP_WooCommerce_WordPress'); //CnP_CiviCRM_WordPress#CnP_CiviCRM_Joomla#CnP_CiviCRM_Drupal
 		$applicationid=$application->appendChild($applicationname);
 
-		$applicationversion=$dom->createElement('Version','1.000.000.000.20140101');  //2.000.000.000.20130103 Version-Minor change-Bug Fix-Internal Release Number -Release Date
+		$applicationversion=$dom->createElement('Version','1.001.000.000.20140101');  //2.000.000.000.20130103 Version-Minor change-Bug Fix-Internal Release Number -Release Date
 		$applicationversion=$application->appendChild($applicationversion);
 
 		$request = $dom->createElement('Request', '');
@@ -196,7 +186,7 @@ class clickandpledge_request {
 				
 		if( $orderplaced->billing_phone != '' )
 		{
-			$bill_phone=$dom->createElement('BillingPhone',$orderplaced->billing_phone);
+			$bill_phone=$dom->createElement('BillingPhone',$this->safeString($orderplaced->billing_phone, 50));
 			$bill_phone=$billinginfo->appendChild($bill_phone);
 		}
 				
@@ -241,25 +231,25 @@ class clickandpledge_request {
 			
 			if( $orderplaced->shipping_address_1 != '' )
 			{
-				$ship_address1=$dom->createElement('ShippingAddress1',$this->safeString($orderplaced->shipping_address_1,60));
+				$ship_address1=$dom->createElement('ShippingAddress1',$this->safeString($orderplaced->shipping_address_1,100));
 				$ship_address1=$shippingaddress->appendChild($ship_address1);
 			}
 
 			if( $orderplaced->shipping_address_2 != '' )
 			{
-				$ship_address2=$dom->createElement('ShippingAddress2',$this->safeString($orderplaced->shipping_address_2,60));
+				$ship_address2=$dom->createElement('ShippingAddress2',$this->safeString($orderplaced->shipping_address_2,100));
 				$ship_address2=$shippingaddress->appendChild($ship_address2);
 			}
 
 			if( $orderplaced->shipping_city != '' )
 			{
-				$ship_city=$dom->createElement('ShippingCity',$this->safeString($orderplaced->shipping_city, 40));
+				$ship_city=$dom->createElement('ShippingCity',$this->safeString($orderplaced->shipping_city, 50));
 				$ship_city=$shippingaddress->appendChild($ship_city);
 			}
 
 			if( $orderplaced->shipping_state != '' )
 			{
-				$ship_state=$dom->createElement('ShippingStateProvince',$this->safeString($orderplaced->shipping_state, 40));
+				$ship_state=$dom->createElement('ShippingStateProvince',$this->safeString($orderplaced->shipping_state, 50));
 				$ship_state=$shippingaddress->appendChild($ship_state);
 			}
 			
@@ -296,7 +286,7 @@ class clickandpledge_request {
 			$fieldvalue = $customfield->appendChild($fieldvalue);
 		}
 		
-		if( isset($orderplaced->order_comments) && $orderplaced->order_comments != '' )
+		if( isset($orderplaced->customer_note) && $orderplaced->customer_note != '' )
 		{
 			$customfield = $dom->createElement('CustomField','');
 			$customfield = $customfieldlist->appendChild($customfield);
@@ -304,7 +294,7 @@ class clickandpledge_request {
 			$fieldname = $dom->createElement('FieldName','Order Notes');
 			$fieldname = $customfield->appendChild($fieldname);
 				
-			$fieldvalue = $dom->createElement('FieldValue',$this->safeString($orderplaced->order_comments, 500));
+			$fieldvalue = $dom->createElement('FieldValue',$this->safeString($orderplaced->customer_note, 500));
 			$fieldvalue = $customfield->appendChild($fieldvalue);
 		}
 		
@@ -316,9 +306,9 @@ class clickandpledge_request {
 
 		$creditcard=$dom->createElement('CreditCard','');
 		$creditcard=$paymentmethod->appendChild($creditcard);
-				
-		if (isset($params['cardholder_name'])) {
-			$credit_card_name = $params['cardholder_name'];
+			
+		if (isset($params['clickandpledge_name_on_card'])) {
+			$credit_card_name = $params['clickandpledge_name_on_card'];
 		}
 		else {
 			$credit_card_name = $params['billing_first_name'] . " ";
@@ -348,13 +338,7 @@ class clickandpledge_request {
 		$custom_fields = array();
 		foreach($orderplaced->get_items() as $i => $Item) 
 		{
-			//echo '<pre>';
-			//print_r( $Item );
-			//echo $this->safeString(trim(utf8_decode($Item['name'])));
-			//echo '$$'.$Item['name'];
-			//print_r(get_product($Item['variation_id'] ? $Item['variation_id'] : $Item['product_id']));			
-			//print_r($orderplaced->get_line_subtotal($Item));
-			//die();
+
 			$metadata = get_post_meta($Item['product_id']);
 			
 			foreach($metadata as $key => $val) {
@@ -370,12 +354,6 @@ class clickandpledge_request {
 				 }				
 			}
 			
-			//echo '<pre>';
-			//echo $name;
-			//die();
-			//print_r(unserialize($metadata['_product_attributes'][0]));
-			//print_r($Item);
-			//die('hhhh');
 			$orderitem=$dom->createElement('OrderItem','');
 			$orderitem=$orderitemlist->appendChild($orderitem);
 
@@ -388,13 +366,36 @@ class clickandpledge_request {
 			$quntity=$dom->createElement('Quantity',$Item['qty']);
 			$quntity=$orderitem->appendChild($quntity);
 
+			if( isset($params['clickandpledge_isRecurring']) &&  $params['clickandpledge_isRecurring'] == 'on' ) {
+				if($params['clickandpledge_RecurringMethod'] == 'Installment') {
+				$UnitPrice = (number_format(($orderplaced->get_item_total($Item)/$params['clickandpledge_Installment']),2,'.','')*100);
+				$unitprice=$dom->createElement('UnitPrice', $UnitPrice);
+				$unitprice=$orderitem->appendChild($unitprice);
+				} else {
+				$unitprice=$dom->createElement('UnitPrice',($orderplaced->get_item_total($Item)*100));
+				$unitprice=$orderitem->appendChild($unitprice);
+				}
+			} else {
 			$unitprice=$dom->createElement('UnitPrice',($orderplaced->get_item_total($Item)*100));
 			$unitprice=$orderitem->appendChild($unitprice);
+			}
 			
 			if( isset( $Item['line_tax'] ) && $Item['line_tax'] != 0 )
 			{
+				if( isset($params['clickandpledge_isRecurring']) &&  $params['clickandpledge_isRecurring'] == 'on' ) {
+					if($params['clickandpledge_RecurringMethod'] == 'Installment') {
+					$UnitTax = number_format(($orderplaced->get_item_tax($Item)/$params['clickandpledge_Installment']),2,'.','')*100;
+					$unit_tax=$dom->createElement('UnitTax', $UnitTax);
+					$unit_tax=$orderitem->appendChild($unit_tax);
+					} else {
+					$unit_tax=$dom->createElement('UnitTax',number_format($orderplaced->get_item_tax($Item),2,'.','')*100);
+					$unit_tax=$orderitem->appendChild($unit_tax);
+					}
+				}
+				else {
 				$unit_tax=$dom->createElement('UnitTax',number_format($orderplaced->get_item_tax($Item),2,'.','')*100);
 				$unit_tax=$orderitem->appendChild($unit_tax);
+				}
 			}
 			
 			if( $metadata['_sku'][0] != '' ) {			
@@ -428,24 +429,42 @@ class clickandpledge_request {
 		if(isset($orderplaced->order_shipping) && $orderplaced->order_shipping != 0){
 			$shipping=$dom->createElement('Shipping','');
 			$shipping=$order->appendChild($shipping);
-			$shippingObj = new WC_Shipping();
-			foreach ($shippingObj->load_shipping_methods() as $name => $shipp)
-			{
-				if($name == $orderplaced->shipping_method){
-					$shipping_method=$dom->createElement('ShippingMethod',$shipp->title);
-					$shipping_method=$shipping->appendChild($shipping_method);
-					//print_r($shipp);
-					$shipping_value = $dom->createElement('ShippingValue',number_format($orderplaced->order_shipping, 2, '.', '')*100);
-					$shipping_value=$shipping->appendChild($shipping_value);
-
-					if( $orderplaced->order_shipping_tax )
-					{
-						$shiptax = number_format( ($orderplaced->order_shipping_tax), 2, '.', '' )*100;		
-						$shipping_tax=$dom->createElement('ShippingTax',$shiptax);
-						$shipping_tax=$shipping->appendChild($shipping_tax);
-					}
+				
+			$shipping_method=$dom->createElement('ShippingMethod',$orderplaced->shipping_method_title);
+			$shipping_method=$shipping->appendChild($shipping_method);
+			//print_r($shipp);
+			if( isset($params['clickandpledge_isRecurring']) &&  $params['clickandpledge_isRecurring'] == 'on' ) {
+				if($params['clickandpledge_RecurringMethod'] == 'Installment') {
+				$ShippingValue = number_format(($orderplaced->order_shipping/$params['clickandpledge_Installment']), 2, '.', '')*100;
+				$shipping_value = $dom->createElement('ShippingValue', $ShippingValue);
+				$shipping_value=$shipping->appendChild($shipping_value);
+				} else {
+				$shipping_value = $dom->createElement('ShippingValue',number_format($orderplaced->order_shipping, 2, '.', '')*100);
+				$shipping_value=$shipping->appendChild($shipping_value);
 				}
+			} else {
+			$shipping_value = $dom->createElement('ShippingValue',number_format($orderplaced->order_shipping, 2, '.', '')*100);
+			$shipping_value=$shipping->appendChild($shipping_value);
 			}
+
+			if( $orderplaced->order_shipping_tax )
+			{
+				if( isset($params['clickandpledge_isRecurring']) &&  $params['clickandpledge_isRecurring'] == 'on' ) {
+					if($params['clickandpledge_RecurringMethod'] == 'Installment') {
+					$ShippingTax = number_format( (($orderplaced->order_shipping_tax/$params['clickandpledge_Installment'])), 2, '.', '' )*100;	
+					$shipping_tax=$dom->createElement('ShippingTax',$ShippingTax);
+					$shipping_tax=$shipping->appendChild($shipping_tax);
+					} else {
+					$ShippingTax = number_format( ($orderplaced->order_shipping_tax), 2, '.', '' )*100;	
+					$shipping_tax=$dom->createElement('ShippingTax',$ShippingTax);
+					$shipping_tax=$shipping->appendChild($shipping_tax);
+					}
+				} else {
+				$ShippingTax = number_format( ($orderplaced->order_shipping_tax), 2, '.', '' )*100;	
+				$shipping_tax=$dom->createElement('ShippingTax',$ShippingTax);
+				$shipping_tax=$shipping->appendChild($shipping_tax);
+				}
+			}			
 		}
 		
 		
@@ -455,21 +474,21 @@ class clickandpledge_request {
 		$recipt_lang=$dom->createElement('Language','ENG');
 		$recipt_lang=$receipt->appendChild($recipt_lang);
 		
-		if( $this->settings['OrganizationInformation'] != '')
+		if( $settings['OrganizationInformation'] != '')
 		{
-			$recipt_org=$dom->createElement('OrganizationInformation',$this->settings['OrganizationInformation']);
+			$recipt_org=$dom->createElement('OrganizationInformation',$this->safeString($settings['OrganizationInformation'], 1500));
 			$recipt_org=$receipt->appendChild($recipt_org);
 		}
 		
-		if( $this->settings['ThankYouMessage'] != '')
+		if( $settings['ThankYouMessage'] != '')
 		{
-			$recipt_thanks=$dom->createElement('ThankYouMessage','<![CDATA['.$this->settings['ThankYouMessage'].']]>');
+			$recipt_thanks=$dom->createElement('ThankYouMessage',$this->safeString($settings['ThankYouMessage'], 500));
 			$recipt_thanks=$receipt->appendChild($recipt_thanks);
 		}
 		
-		if( $this->settings['TermsCondition'] != '')
+		if( $settings['TermsCondition'] != '')
 		{
-			$recipt_terms=$dom->createElement('TermsCondition','<![CDATA['.$this->settings['TermsCondition'].']]>');
+			$recipt_terms=$dom->createElement('TermsCondition',$this->safeString($settings['TermsCondition'], 1500));
 			$recipt_terms=$receipt->appendChild($recipt_terms);
 		}
 
@@ -478,7 +497,7 @@ class clickandpledge_request {
 		
 		$email_notification = '';		
 		if (isset($params['billing_email']) && $params['billing_email'] != '') {
-			$email_notification = $params['email'];
+			$email_notification = $params['billing_email'];
 		}
 							
 		$email_note=$dom->createElement('NotificationEmail',$email_notification);
@@ -539,12 +558,23 @@ class clickandpledge_request {
 		{
 			$cart_discount = $orderplaced->cart_discount;
 		}
+		if( isset($params['clickandpledge_isRecurring']) &&  $params['clickandpledge_isRecurring'] == 'on' ) {
+			if($params['clickandpledge_RecurringMethod'] == 'Installment') {
+				$TotalDiscount = ($order_discount + $cart_discount)/$params['clickandpledge_Installment'];
+				$TotalDiscount = number_format($TotalDiscount, 2, '.', '')*100;
+			} else {
+				$TotalDiscount = $order_discount + $cart_discount;		
+			}
+		} else {
 		$TotalDiscount = $order_discount + $cart_discount;		
-		if($TotalDiscount) {
-		$total_discount=$dom->createElement('TotalDiscount',number_format($TotalDiscount, 2, '.', '')*100);
+		}
+		if($TotalDiscount) {		
+		$total_discount=$dom->createElement('TotalDiscount', $TotalDiscount);
 		$total_discount=$trans_totals->appendChild($total_discount);
 		}
-		
+		//echo '<pre>';
+		//print_r($orderplaced);
+		//die();
 		//Tax Calculation
 		$order_tax = 0;
 		$order_shipping_tax = 0;
@@ -559,18 +589,52 @@ class clickandpledge_request {
 		}
 		$TotalTax = $order_tax+$order_shipping_tax;		
 		if($TotalTax) {
-		$total_tax=$dom->createElement('TotalTax',number_format($TotalTax, 2, '.', '')*100);
-		$total_tax=$trans_totals->appendChild($total_tax);
+			if( isset($params['clickandpledge_isRecurring']) &&  $params['clickandpledge_isRecurring'] == 'on' ) {
+				if($params['clickandpledge_RecurringMethod'] == 'Installment') {
+				$TotalTax = number_format(($TotalTax/$params['clickandpledge_Installment']), 2, '.', '')*100;
+				$total_tax=$dom->createElement('TotalTax', $TotalTax);
+				$total_tax=$trans_totals->appendChild($total_tax);
+				} else {
+				$total_tax=$dom->createElement('TotalTax',number_format($TotalTax, 2, '.', '')*100);
+				$total_tax=$trans_totals->appendChild($total_tax);
+				}
+			} else {
+			$total_tax=$dom->createElement('TotalTax',number_format($TotalTax, 2, '.', '')*100);
+			$total_tax=$trans_totals->appendChild($total_tax);
+			}
 		}
 			
 		if( isset($orderplaced->order_shipping) && $orderplaced->order_shipping != 0 )
 		{
+			if( isset($params['clickandpledge_isRecurring']) &&  $params['clickandpledge_isRecurring'] == 'on' ) {
+				if($params['clickandpledge_RecurringMethod'] == 'Installment') {
+				$TotalShipping = number_format(($orderplaced->order_shipping/$params['clickandpledge_Installment']), 2, '.', '')*100;
+				$total_ship=$dom->createElement('TotalShipping', $TotalShipping);
+				$total_ship=$trans_totals->appendChild($total_ship);
+				} else {
+				$total_ship=$dom->createElement('TotalShipping',number_format($orderplaced->order_shipping, 2, '.', '')*100);
+				$total_ship=$trans_totals->appendChild($total_ship);
+				}
+			} else {
 			$total_ship=$dom->createElement('TotalShipping',number_format($orderplaced->order_shipping, 2, '.', '')*100);
 			$total_ship=$trans_totals->appendChild($total_ship);
+			}
 		}
 		
+		if( isset($params['clickandpledge_isRecurring']) &&  $params['clickandpledge_isRecurring'] == 'on' ) {
+			if($params['clickandpledge_RecurringMethod'] == 'Installment') {
+			$Total = ( $UnitPrice + $UnitTax + $ShippingValue + $ShippingTax ) - ($TotalDiscount);
+			//$Total = $UnitPrice + $UnitTax + $ShippingValue + $ShippingTax;	
+			$total_amount=$dom->createElement('Total', $Total);
+			$total_amount=$trans_totals->appendChild($total_amount);
+			} else {
+			$total_amount=$dom->createElement('Total',($orderplaced->order_total*100));
+			$total_amount=$trans_totals->appendChild($total_amount);
+			}
+		} else {
 		$total_amount=$dom->createElement('Total',($orderplaced->order_total*100));
 		$total_amount=$trans_totals->appendChild($total_amount);
+		}
 		
 		if(count($orderplaced->get_used_coupons())) {
 			$usercoupons = $orderplaced->get_used_coupons();
@@ -587,8 +651,19 @@ class clickandpledge_request {
 		
 		if( $TotalDiscount )
 		{
+			if( isset($params['clickandpledge_isRecurring']) &&  $params['clickandpledge_isRecurring'] == 'on' ) {
+				if($params['clickandpledge_RecurringMethod'] == 'Installment') {
+				$TransactionDiscount =$TotalDiscount;
+				$trans_coupon_discount=$dom->createElement('TransactionDiscount', $TransactionDiscount);
+				$trans_coupon_discount=$transation->appendChild($trans_coupon_discount);
+				} else {
+				$trans_coupon_discount=$dom->createElement('TransactionDiscount',number_format($TotalDiscount, 2, '.', '')*100);
+				$trans_coupon_discount=$transation->appendChild($trans_coupon_discount);
+				}
+			} else {
 			$trans_coupon_discount=$dom->createElement('TransactionDiscount',number_format($TotalDiscount, 2, '.', '')*100);
 			$trans_coupon_discount=$transation->appendChild($trans_coupon_discount);
+			}
 		}
 		
 		$strParam =$dom->saveXML();
