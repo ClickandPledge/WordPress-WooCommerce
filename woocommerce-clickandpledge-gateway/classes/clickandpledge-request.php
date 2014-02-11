@@ -140,7 +140,10 @@ class clickandpledge_request {
 		
 		$ipaddress=$dom->createElement('IPAddress',$this->get_user_ip());
 		$ipaddress=$operation->appendChild($ipaddress);
-
+		
+		$httpreferrer=$dom->createElement('UrlReferrer',$_SERVER['HTTP_REFERER']);
+		$httpreferrer=$operation->appendChild($httpreferrer);
+		
 		$authentication=$dom->createElement('Authentication','');
 		$authentication=$request->appendChild($authentication);
 
