@@ -990,13 +990,13 @@ function woocommerce_clickandpledge_init() {
 			if ($response['status'] == 'Success') :
 				$order->add_order_note( __('Click & Pledge payment completed', 'woothemes') . ' (Transaction ID: ' . $response['TransactionNumber'] . ')' );
 				$order->payment_complete();
-	
+				//$order->reduce_order_stock();
 				$woocommerce->cart->empty_cart();
 					
 				// Return thank you page redirect
 				return array(
 					'result' 	=> 'success',
-					'redirect'	=> add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))))
+					'redirect'	=> $this->get_return_url( $order )
 				);
 			else :
 				$cancelNote = __('Click & Pledge payment failed', 'woothemes') . ' (Transaction ID: ' . $response['TransactionNumber'] . '). ' . __('Payment was rejected due to an error', 'woothemes') . ': "' . $response['error'] . '". ';
