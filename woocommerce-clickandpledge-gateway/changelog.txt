@@ -1,4 +1,8 @@
 *** Click & Pledge Changelog ***
+2014.04.22 - Version 1.1.0
+* Fixed the issue to find country code for shipping.
+* Fixed 'wrapper is disabled in the server configuration by allow_url_fopen=0' warning where "allow_url_fopen" disabled in php.ini.
+* Fixed the issue to display shipping method title.
 
 2014.01.10 - version 1.0.1
  * Code Released to public

@@ -6,9 +6,9 @@ Tags:              clickandpledge,woothemes,woocommerce,payment gateway,payment,
 Author URI:        http://www.clickandpledge.com
 Author:            Click & Pledge
 Requires at least: 3.0.1 
-Tested up to:      3.8
-Stable tag:        1.0
-Version:           1.0
+Tested up to:      3.9
+Stable tag:        1.1
+Version:           1.1
 License: GPLv2 or later
 
 == Description ==
@@ -63,6 +63,10 @@ Comming soon
 == Screenshots ==
 Coming Soon 
 == Changelog ==
+2014.04.22 - Version 1.1.0
+* Fixed the issue to find country code for shipping.
+* Fixed 'wrapper is disabled in the server configuration by allow_url_fopen=0' warning where "allow_url_fopen" disabled in php.ini.
+* Fixed the issue to display shipping method title.
 
 2014.01.10 - version 1.0
  * First Release
