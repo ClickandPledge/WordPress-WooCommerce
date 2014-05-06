@@ -2,8 +2,8 @@
 /*
 Plugin Name: WooCommerce Click & Pledge Gateway
 Plugin URI: http://manual.clickandpledge.com/
-Description: With Click & Pledge, Accept all major credit cards directly on your WooCommerce website with a seamless and secure checkout experience.. <a href="http://manual.clickandpledge.com/" target="_blank">Click Here</a> to get a Click & Pledge account.
-Version: 1.0
+Description: With Click & Pledge, Accept all major credit cards directly on your WooCommerce website with a seamless and secure checkout experience.<a href="http://manual.clickandpledge.com/" target="_blank">Click Here</a> to get a Click & Pledge account.
+Version: 1.2
 Author: Click & Pledge
 Author URI: http://www.clickandpledge.com
 */
@@ -199,6 +199,13 @@ function woocommerce_clickandpledge_init() {
 								'maxlength' => 200
 							),
 											
+				'cnp_email_customer' => array(
+								'title' => __( 'Send Receipt to Patron', 'woothemes' ), 
+								'type' => 'checkbox', 
+								'description' => __( '', 'woothemes' ), 
+								'default' => true,
+							),
+							
 				'AcceptedCreditCards' => array(
 								'title' => __( 'Accepted Credit Cards', 'woothemes' ), 
 								'type' => 'text',
@@ -236,6 +243,8 @@ function woocommerce_clickandpledge_init() {
 								'description' => __( '', 'woothemes' ), 
 								'default' => false,
 							),
+							
+				
 							
 				'OrganizationInformation' => array(
 								'title' => __( 'Organization information', 'woothemes' ), 
@@ -972,14 +981,15 @@ function woocommerce_clickandpledge_init() {
 				
 				$posted_settings = array();
 				$posted_settings['AccountID'] = $this->AccountID;
-				$posted_settings['AccountGuid'] = $this->AccountGuid;				
+				$posted_settings['AccountGuid'] = $this->AccountGuid;
+				$posted_settings['cnp_email_customer'] = $this->settings['cnp_email_customer'];
 				$posted_settings['Total'] = $order->order_total;
 				$posted_settings['OrderMode'] = $this->testmode;
 				
 				$posted_settings['OrganizationInformation'] = $this->settings['OrganizationInformation'];
 				$posted_settings['ThankYouMessage'] = $this->settings['ThankYouMessage'];
 				$posted_settings['TermsCondition'] = $this->settings['TermsCondition'];
-				
+			
 				$response = $request->send($posted_settings, $_POST, $order);
 			
 			} catch(Exception $e) {

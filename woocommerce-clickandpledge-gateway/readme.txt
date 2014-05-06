@@ -7,8 +7,8 @@ Author URI:        http://www.clickandpledge.com
 Author:            Click & Pledge
 Requires at least: 3.0.1 
 Tested up to:      3.9
-Stable tag:        1.1
-Version:           1.1
+Stable tag:        1.2
+Version:           1.2
 License: GPLv2 or later
 
 == Description ==

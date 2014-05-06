@@ -139,7 +139,7 @@ class clickandpledge_request {
 		$applicationname=$dom->createElement('Name','CnP_WooCommerce_WordPress'); //CnP_CiviCRM_WordPress#CnP_CiviCRM_Joomla#CnP_CiviCRM_Drupal
 		$applicationid=$application->appendChild($applicationname);
 
-		$applicationversion=$dom->createElement('Version','1.100.000.000.20140422');  //2.000.000.000.20130103 Version-Minor change-Bug Fix-Internal Release Number -Release Date
+		$applicationversion=$dom->createElement('Version','1.200.000.000.20140506');  //2.000.000.000.20130103 Version-Minor change-Bug Fix-Internal Release Number -Release Date
 		$applicationversion=$application->appendChild($applicationversion);
 
 		$request = $dom->createElement('Request', '');
@@ -544,17 +544,18 @@ class clickandpledge_request {
 			$recipt_terms=$receipt->appendChild($recipt_terms);
 		}
 
-		$recipt_email=$dom->createElement('EmailNotificationList','');
-		$recipt_email=$receipt->appendChild($recipt_email);			
-		
-		$email_notification = '';		
-		if (isset($params['billing_email']) && $params['billing_email'] != '') {
-			$email_notification = $params['billing_email'];
+		if( $settings['cnp_email_customer'] == 'yes' ) { //Sending the email based on admin settings
+			$recipt_email=$dom->createElement('EmailNotificationList','');
+			$recipt_email=$receipt->appendChild($recipt_email);			
+			
+			$email_notification = '';		
+			if (isset($params['billing_email']) && $params['billing_email'] != '') {
+				$email_notification = $params['billing_email'];
+			}
+								
+			$email_note=$dom->createElement('NotificationEmail',$email_notification);
+			$email_note=$recipt_email->appendChild($email_note);
 		}
-							
-		$email_note=$dom->createElement('NotificationEmail',$email_notification);
-		$email_note=$recipt_email->appendChild($email_note);
-
 		$transation=$dom->createElement('Transaction','');
 		$transation=$order->appendChild($transation);
 

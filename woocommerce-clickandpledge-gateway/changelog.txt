@@ -1,4 +1,7 @@
 *** Click & Pledge Changelog ***
+2014.05.06 - Version 1.2.0
+* Added the feature to send receipt to patron or not.
+
 2014.04.22 - Version 1.1.0
 * Fixed the issue to find country code for shipping.
 * Fixed 'wrapper is disabled in the server configuration by allow_url_fopen=0' warning where "allow_url_fopen" disabled in php.ini.
