@@ -199,12 +199,7 @@ function woocommerce_clickandpledge_init() {
 								'maxlength' => 200
 							),
 											
-				'cnp_email_customer' => array(
-								'title' => __( 'Send Receipt to Patron', 'woothemes' ), 
-								'type' => 'checkbox', 
-								'description' => __( '', 'woothemes' ), 
-								'default' => true,
-							),
+				
 							
 				'AcceptedCreditCards' => array(
 								'title' => __( 'Accepted Credit Cards', 'woothemes' ), 
@@ -245,6 +240,12 @@ function woocommerce_clickandpledge_init() {
 							),
 							
 				
+				'cnp_email_customer' => array(
+								'title' => __( 'Send Receipt to Patron', 'woothemes' ), 
+								'type' => 'checkbox', 
+								'description' => __( '', 'woothemes' ), 
+								'default' => true,
+							),
 							
 				'OrganizationInformation' => array(
 								'title' => __( 'Organization information', 'woothemes' ), 
@@ -723,17 +724,68 @@ function woocommerce_clickandpledge_init() {
 			<fieldset>
 				<?php 
 				if($this->isRecurring) { ?>
+				<script type="text/javascript">
+				jQuery( document ).ready(function(){		
+					if(jQuery('#clickandpledge_isRecurring').is(':checked')) {
+						jQuery('#clickandpledge_Periodicity_p').show();
+						jQuery('#clickandpledge_RecurringMethod_p').show();
+						if(jQuery('#clickandpledge_indefinite').length)
+								jQuery('#clickandpledge_indefinite_p').show();
+					} else {
+						jQuery('#clickandpledge_Periodicity_p').hide();
+						jQuery('#clickandpledge_RecurringMethod_p').hide();
+						if(jQuery('#clickandpledge_indefinite').length)
+								jQuery('#clickandpledge_indefinite_p').hide();
+					}				
+									
+					jQuery('#clickandpledge_indefinite').click(function(){
+						if(jQuery('#clickandpledge_indefinite').is(':checked')) {
+							jQuery('#clickandpledge_Installment').val('');	
+							jQuery('#clickandpledge_Installment_req').hide();						
+							//jQuery('#clickandpledge_Installment_req').html('');
+							//jQuery('#clickandpledge_Installment').attr('readonly', true);
+						} else {
+							jQuery('#clickandpledge_Installment_req').show();	
+							//jQuery('#clickandpledge_Installment_req').html('<font color="#FF0000">*</font>');
+							//jQuery('#clickandpledge_Installment').attr('readonly', false);
+						}
+					});
+				});
+				function isIndefinite() {
+					if(jQuery('#clickandpledge_indefinite').is(':checked')) {
+							jQuery('#clickandpledge_Installment').val('');	
+							jQuery('#clickandpledge_Installment_req').hide();
+						} else {
+							jQuery('#clickandpledge_Installment_req').show();
+						}
+				}
+				function isRecurring() {
+					if(jQuery('#clickandpledge_isRecurring').is(':checked')) {					
+							jQuery('#clickandpledge_Periodicity_p').show();
+							jQuery('#clickandpledge_RecurringMethod_p').show();
+							if(jQuery('#clickandpledge_indefinite').length)
+								jQuery('#clickandpledge_indefinite_p').show();
+						} else {
+							jQuery('#clickandpledge_Periodicity_p').hide();
+							jQuery('#clickandpledge_RecurringMethod_p').hide();
+							if(jQuery('#clickandpledge_indefinite').length)
+								jQuery('#clickandpledge_indefinite_p').hide();
+						}
+				}
+				</script>
 				<p class="">
 					<label for="clickandpledge_cart_type">
-					<input type="checkbox" name="clickandpledge_isRecurring" id="clickandpledge_isRecurring">&nbsp;
+					<input type="checkbox" name="clickandpledge_isRecurring" id="clickandpledge_isRecurring" onclick="isRecurring()">&nbsp;
 					<?php echo __($this->settings['RecurringLabel'], 'woocommerce') ?> </label>
 				</p>
 				<div class="clear"></div>
 				
 				<?php 
 				//print_r($this->settings);
-				if(count($this->RecurringMethod) > 1) { ?>
-				<p class="" id="clickandpledge_RecurringMethod_p">
+				if(count($this->RecurringMethod) > 0) {
+				?>
+				
+				<p class="" id="clickandpledge_RecurringMethod_p" style="display:none;">
 					<label for="clickandpledge_card_csc"><?php _e("Recurring Method", 'woocommerce') ?> <span class="required" style="color:red;">*</span></label>
 					<select id="clickandpledge_RecurringMethod" name="clickandpledge_RecurringMethod">
 						<?php foreach ($this->RecurringMethod as $r) : ?>
@@ -742,16 +794,21 @@ function woocommerce_clickandpledge_init() {
 					</select>
 				</p>
 				<script>
-					if(jQuery('#clickandpledge_RecurringMethod').val() == 'Installment') {
-							jQuery('#clickandpledge_indefinite_p').hide();
-					}
-					
-					jQuery('#clickandpledge_RecurringMethod').change(function(){
+					jQuery(document).ready(function(){					
+						
+						jQuery('#clickandpledge_RecurringMethod_p').hide();					
 						if(jQuery('#clickandpledge_RecurringMethod').val() == 'Installment') {
-							jQuery('#clickandpledge_indefinite_p').hide();
-						} else {
-							jQuery('#clickandpledge_indefinite_p').show();
+								jQuery('#clickandpledge_indefinite_p').hide();
 						}
+						
+						jQuery('#clickandpledge_RecurringMethod').change(function(){
+							if(jQuery('#clickandpledge_RecurringMethod').val() == 'Installment') {
+								jQuery('#clickandpledge_indefinite_p').hide();
+							} else {
+								jQuery('#clickandpledge_indefinite_p').show();
+							}
+						});	
+						
 					});
 				</script>
 				<?php } else {				
@@ -770,16 +827,16 @@ function woocommerce_clickandpledge_init() {
 				<?php
 					if(isset($this->settings['indefinite']) && $this->settings['indefinite'] == 'yes') {
 					?>
-					<span id="clickandpledge_indefinite_p">
+					<span id="clickandpledge_indefinite_p" style="display:none;">
 					&nbsp;
-					<input type="checkbox" name="clickandpledge_indefinite" id="clickandpledge_indefinite">Indefinite Recurring&nbsp;
+					<input type="checkbox" name="clickandpledge_indefinite" id="clickandpledge_indefinite" onclick="isIndefinite()">Indefinite Recurring&nbsp;
 					</span>
 					<?php } ?>
 				</p>
 				<div class="clear"></div>
 				
 								
-				<p class="" id="clickandpledge_Periodicity_p">					
+				<p class="" id="clickandpledge_Periodicity_p" style="display:none;">					
 					Every <select id="clickandpledge_Periodicity" name="clickandpledge_Periodicity">
 						<?php foreach ($this->Periodicity as $p) : ?>
 									<option value="<?php echo $p ?>"><?php echo $p; ?></options>
@@ -806,37 +863,7 @@ function woocommerce_clickandpledge_init() {
 				
 				
 				
-				<script type="text/javascript">
-				if(jQuery('#clickandpledge_isRecurring').is(':checked')) {
-						jQuery('#clickandpledge_Periodicity_p').show();
-						jQuery('#clickandpledge_RecurringMethod_p').show();
-					} else {
-						jQuery('#clickandpledge_Periodicity_p').hide();
-						jQuery('#clickandpledge_RecurringMethod_p').hide();
-					}
-				jQuery('#clickandpledge_isRecurring').click(function(){
-					if(jQuery('#clickandpledge_isRecurring').is(':checked')) {
-						jQuery('#clickandpledge_Periodicity_p').show();
-						jQuery('#clickandpledge_RecurringMethod_p').show();
-					} else {
-						jQuery('#clickandpledge_Periodicity_p').hide();
-						jQuery('#clickandpledge_RecurringMethod_p').hide();
-					}
-				});
 				
-				jQuery('#clickandpledge_indefinite').click(function(){
-					if(jQuery('#clickandpledge_indefinite').is(':checked')) {
-						jQuery('#clickandpledge_Installment').val('');	
-						jQuery('#clickandpledge_Installment_req').hide();						
-						//jQuery('#clickandpledge_Installment_req').html('');
-						//jQuery('#clickandpledge_Installment').attr('readonly', true);
-					} else {
-						jQuery('#clickandpledge_Installment_req').show();	
-						//jQuery('#clickandpledge_Installment_req').html('<font color="#FF0000">*</font>');
-						//jQuery('#clickandpledge_Installment').attr('readonly', false);
-					}
-				});
-				</script>
 				
 				<?php } ?>
 				

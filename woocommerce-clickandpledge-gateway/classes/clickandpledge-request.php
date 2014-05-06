@@ -22,6 +22,9 @@ class clickandpledge_request {
      */
 	public function send($settings, $post, $order) {
 		
+		//echo '<pre>';
+		//print_r($post);
+		//die();
 		$strParam =  $this->buildXML( $settings, $post, $order );
 		//echo $strParam;
 		//die();
@@ -412,9 +415,13 @@ class clickandpledge_request {
 
 			if( isset($params['clickandpledge_isRecurring']) &&  $params['clickandpledge_isRecurring'] == 'on' ) {
 				if($params['clickandpledge_RecurringMethod'] == 'Installment') {
-				$UnitPrice = (number_format(($orderplaced->get_item_total($Item)/$params['clickandpledge_Installment']),2,'.','')*100);
-				$unitprice=$dom->createElement('UnitPrice', $UnitPrice);
-				$unitprice=$orderitem->appendChild($unitprice);
+					if($params['clickandpledge_indefinite'] == 'on') {
+					$UnitPrice = (number_format(($orderplaced->get_item_total($Item)/999),2,'.','')*100);
+					} else {
+					$UnitPrice = (number_format(($orderplaced->get_item_total($Item)/$params['clickandpledge_Installment']),2,'.','')*100);
+					}
+					$unitprice=$dom->createElement('UnitPrice', $UnitPrice);
+					$unitprice=$orderitem->appendChild($unitprice);
 				} else {
 				$unitprice=$dom->createElement('UnitPrice',($orderplaced->get_item_total($Item)*100));
 				$unitprice=$orderitem->appendChild($unitprice);
