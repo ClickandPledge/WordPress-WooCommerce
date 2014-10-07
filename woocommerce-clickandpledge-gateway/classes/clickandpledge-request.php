@@ -114,7 +114,8 @@ class clickandpledge_request {
 	
 	function safeString( $str,  $length=1, $start=0 )
 	{
-		return substr( htmlentities( ( $str ) ), $start, $length );
+		$str = preg_replace('/\x03/', '', $str); //Remove new line characters
+		return substr( htmlspecialchars( ( $str ) ), $start, $length );
 	}
 	
 	function buildXML( $settings, $post, $orderplaced )
@@ -142,7 +143,7 @@ class clickandpledge_request {
 		$applicationname=$dom->createElement('Name','CnP_WooCommerce_WordPress'); //CnP_CiviCRM_WordPress#CnP_CiviCRM_Joomla#CnP_CiviCRM_Drupal
 		$applicationid=$application->appendChild($applicationname);
 
-		$applicationversion=$dom->createElement('Version','1.200.000.000.20140506');  //2.000.000.000.20130103 Version-Minor change-Bug Fix-Internal Release Number -Release Date
+		$applicationversion=$dom->createElement('Version','1.200.001.000.20141007');  //2.000.000.000.20130103 Version-Minor change-Bug Fix-Internal Release Number -Release Date
 		$applicationversion=$application->appendChild($applicationversion);
 
 		$request = $dom->createElement('Request', '');

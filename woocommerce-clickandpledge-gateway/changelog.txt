@@ -1,4 +1,7 @@
 *** Click & Pledge Changelog ***
+2014.10.07 - Version 1.2.1
+* Fixed special character issue (Ref: https://forums.clickandpledge.com/showthread.php?t=2103).
+
 2014.05.06 - Version 1.2.0
 * Added the feature to send receipt to patron or not.
 
