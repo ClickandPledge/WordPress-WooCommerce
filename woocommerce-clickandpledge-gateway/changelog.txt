@@ -1,4 +1,7 @@
 *** Click & Pledge Changelog ***
+2014.11.20 - Version 1.2.2
+* Fixed SKU issue for variable products (Ref: https://github.com/ClickandPledge/WordPress-WooCommerce/issues/1#issuecomment-62725847).
+
 2014.10.07 - Version 1.2.1
 * Fixed special character issue (Ref: https://forums.clickandpledge.com/showthread.php?t=2103).
 

@@ -381,26 +381,29 @@ class clickandpledge_request {
 		$orderitemlist=$dom->createElement('OrderItemList','');
 		$orderitemlist=$order->appendChild($orderitemlist);
 		
-		
+					
 		$items = 0;
 		$custom_fields = array();
 		foreach($orderplaced->get_items() as $i => $Item) 
 		{
-
-			$metadata = get_post_meta($Item['product_id']);
+			$metadata = get_post_meta($Item['product_id']);			
+			$pdetails = new WC_Product($Item['product_id']);
+			$variation_pdetails = new WC_Product_Variation($Item['variation_id']);
 			
 			foreach($metadata as $key => $val) {
 				if(substr($key, 0, 1) != '_')
 				$custom_fields[$Item['name']][] = array($key => $val[0]);
-			}
+			}			
 			
-			if(isset($Item['variation_id']) && $Item['variation_id'] != '') {
-				 $product_attributes = unserialize($metadata['_product_attributes'][0]);
-				 foreach($product_attributes as $attr => $attr_val) {
-					$name = $attr_val['name'];
-					$custom_fields[$Item['name']][] = array($name => $Item[$name]); 
-				 }				
-			}
+			if(isset($Item['variation_id']) && $Item['variation_id'] != 0) {
+				 if($variation_pdetails->has_attributes()) {
+					 $product_attributes = $variation_pdetails->get_attributes();
+					 foreach($product_attributes as $attr => $attr_val) {
+						$name = $attr_val['name'];
+						$custom_fields[$Item['name']][] = array($name => $Item[$attr]); 
+					 }
+				}
+			}			
 			
 			$orderitem=$dom->createElement('OrderItem','');
 			$orderitem=$orderitemlist->appendChild($orderitem);
@@ -450,9 +453,14 @@ class clickandpledge_request {
 				}
 			}
 			
-			if( $metadata['_sku'][0] != '' ) {			
-			$sku_code=$dom->createElement('SKU',substr($metadata['_sku'][0], 0, 25));
-			$sku_code=$orderitem->appendChild($sku_code);
+			if($Item['variation_id'] == 0) {
+				$sku = $pdetails->get_sku();
+			} else {
+				$sku = $variation_pdetails->get_sku();
+			}
+			if( $sku != '' ) {			
+				$sku_code=$dom->createElement('SKU',substr($sku, 0, 25));
+				$sku_code=$orderitem->appendChild($sku_code);
 			}
 
 		}					
@@ -729,8 +737,7 @@ class clickandpledge_request {
 		
 		$strParam =$dom->saveXML();
 
-		//echo $strParam;
-		//die();
+		
 		return $strParam;
 	  }
 }
