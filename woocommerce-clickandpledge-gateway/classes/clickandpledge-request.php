@@ -143,7 +143,7 @@ class clickandpledge_request {
 		$applicationname=$dom->createElement('Name','CnP_WooCommerce_WordPress'); //CnP_CiviCRM_WordPress#CnP_CiviCRM_Joomla#CnP_CiviCRM_Drupal
 		$applicationid=$application->appendChild($applicationname);
 
-		$applicationversion=$dom->createElement('Version','1.200.001.000.20141007');  //2.000.000.000.20130103 Version-Minor change-Bug Fix-Internal Release Number -Release Date
+		$applicationversion=$dom->createElement('Version','1.200.003.000.20141127');  //2.000.000.000.20130103 Version-Minor change-Bug Fix-Internal Release Number -Release Date
 		$applicationversion=$application->appendChild($applicationversion);
 
 		$request = $dom->createElement('Request', '');
@@ -252,12 +252,30 @@ class clickandpledge_request {
 			}
 		}
 		
+		
 		//Shipping Address
+		if($orderplaced->needs_shipping_address()) {
 		if( $orderplaced->shipping_address_1 != '' &&  $orderplaced->shipping_city != '' && $orderplaced->shipping_country != '' )
 		{
 			$shippinginfo=$dom->createElement('ShippingInformation','');
 			$shippinginfo=$cardholder->appendChild($shippinginfo);
 			
+			//Newly Added
+			$ShippingContactInformation=$dom->createElement('ShippingContactInformation','');
+			$ShippingContactInformation=$shippinginfo->appendChild($ShippingContactInformation);
+			
+			if( $orderplaced->shipping_first_name != '' )
+			{
+				$shipping_first_name=$dom->createElement('ShippingFirstName',$this->safeString($orderplaced->shipping_first_name,50));
+				$shipping_first_name=$ShippingContactInformation->appendChild($shipping_first_name);
+			}
+			
+			if( $orderplaced->shipping_last_name != '' )
+			{
+				$shipping_last_name=$dom->createElement('ShippingLastName',$this->safeString($orderplaced->shipping_last_name,50));
+				$shipping_last_name=$ShippingContactInformation->appendChild($shipping_last_name);
+			}
+									
 			$shippingaddress=$dom->createElement('ShippingAddress','');
 			$shippingaddress=$shippinginfo->appendChild($shippingaddress);
 			
@@ -318,6 +336,8 @@ class clickandpledge_request {
 				}
 			}
 		}//End of Shipping Address node
+		}
+		
 		
 		$customfieldlist = $dom->createElement('CustomFieldList','');
 		$customfieldlist = $cardholder->appendChild($customfieldlist);
@@ -485,8 +505,9 @@ class clickandpledge_request {
 				}
 			}
 		}
-				
-		if(isset($orderplaced->order_shipping) && $orderplaced->order_shipping != 0){
+	
+		if($orderplaced->needs_shipping_address()) {
+		//if(isset($orderplaced->order_shipping)){
 			$shipping=$dom->createElement('Shipping','');
 			$shipping=$order->appendChild($shipping);
 			$ship = new WC_Shipping();
@@ -672,9 +693,9 @@ class clickandpledge_request {
 			$total_tax=$trans_totals->appendChild($total_tax);
 			}
 		}
-			
-		if( isset($orderplaced->order_shipping) && $orderplaced->order_shipping != 0 )
-		{
+		
+		if($orderplaced->needs_shipping_address()) {		
+		//if( isset($orderplaced->order_shipping) && $orderplaced->order_shipping != 0 ){
 			if( isset($params['clickandpledge_isRecurring']) &&  $params['clickandpledge_isRecurring'] == 'on' ) {
 				if($params['clickandpledge_RecurringMethod'] == 'Installment') {
 				$TotalShipping = number_format(($orderplaced->order_shipping/$params['clickandpledge_Installment']), 2, '.', '')*100;
@@ -736,7 +757,6 @@ class clickandpledge_request {
 		}
 		
 		$strParam =$dom->saveXML();
-
 		
 		return $strParam;
 	  }
