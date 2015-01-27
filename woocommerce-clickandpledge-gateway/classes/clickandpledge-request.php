@@ -143,7 +143,7 @@ class clickandpledge_request {
 		$applicationname=$dom->createElement('Name','CnP_WooCommerce_WordPress'); //CnP_CiviCRM_WordPress#CnP_CiviCRM_Joomla#CnP_CiviCRM_Drupal
 		$applicationid=$application->appendChild($applicationname);
 
-		$applicationversion=$dom->createElement('Version','1.200.003.000.20141127');  //2.000.000.000.20130103 Version-Minor change-Bug Fix-Internal Release Number -Release Date
+		$applicationversion=$dom->createElement('Version','1.200.003.000.20150127');  //2.000.000.000.20130103 Version-Minor change-Bug Fix-Internal Release Number -Release Date(YYYYMMDD)
 		$applicationversion=$application->appendChild($applicationversion);
 
 		$request = $dom->createElement('Request', '');
@@ -401,7 +401,7 @@ class clickandpledge_request {
 		$orderitemlist=$dom->createElement('OrderItemList','');
 		$orderitemlist=$order->appendChild($orderitemlist);
 		
-					
+		$UnitPriceCalculate = $UnitTaxCalculate = $ShippingValueCalculate = $ShippingTaxCalculate = $TotalDiscountCalculate = 0;			
 		$items = 0;
 		$custom_fields = array();
 		foreach($orderplaced->get_items() as $i => $Item) 
@@ -441,18 +441,23 @@ class clickandpledge_request {
 				if($params['clickandpledge_RecurringMethod'] == 'Installment') {
 					if($params['clickandpledge_indefinite'] == 'on') {
 					$UnitPrice = (number_format(($orderplaced->get_item_total($Item)/999),2,'.','')*100);
+					$UnitPriceCalculate += (number_format(($orderplaced->get_item_total($Item)/999),2,'.','')*$Item['qty']);
 					} else {
 					$UnitPrice = (number_format(($orderplaced->get_item_total($Item)/$params['clickandpledge_Installment']),2,'.','')*100);
+					$UnitPriceCalculate += (number_format(($orderplaced->get_item_total($Item)/$params['clickandpledge_Installment']),2,'.','')*$Item['qty']);
 					}
 					$unitprice=$dom->createElement('UnitPrice', $UnitPrice);
 					$unitprice=$orderitem->appendChild($unitprice);
-				} else {
+				} else {				
 				$unitprice=$dom->createElement('UnitPrice',($orderplaced->get_item_total($Item)*100));
 				$unitprice=$orderitem->appendChild($unitprice);
+				//New Fix
+				$UnitPriceCalculate += ($orderplaced->get_item_total($Item)*$Item['qty']);
 				}
-			} else {
+			} else {			
 			$unitprice=$dom->createElement('UnitPrice',($orderplaced->get_item_total($Item)*100));
 			$unitprice=$orderitem->appendChild($unitprice);
+			$UnitPriceCalculate += ($orderplaced->get_item_total($Item)*$Item['qty']);
 			}
 			
 			if( isset( $Item['line_tax'] ) && $Item['line_tax'] != 0 )
@@ -462,14 +467,17 @@ class clickandpledge_request {
 					$UnitTax = number_format(($orderplaced->get_item_tax($Item)/$params['clickandpledge_Installment']),2,'.','')*100;
 					$unit_tax=$dom->createElement('UnitTax', $UnitTax);
 					$unit_tax=$orderitem->appendChild($unit_tax);
+					$UnitTaxCalculate += (number_format(($orderplaced->get_item_tax($Item)/$params['clickandpledge_Installment']),2,'.','')*$Item['qty']);
 					} else {
 					$unit_tax=$dom->createElement('UnitTax',number_format($orderplaced->get_item_tax($Item),2,'.','')*100);
 					$unit_tax=$orderitem->appendChild($unit_tax);
+					$UnitTaxCalculate += (number_format($orderplaced->get_item_tax($Item),2,'.','')*$Item['qty']);
 					}
 				}
 				else {
 				$unit_tax=$dom->createElement('UnitTax',number_format($orderplaced->get_item_tax($Item),2,'.','')*100);
 				$unit_tax=$orderitem->appendChild($unit_tax);
+				$UnitTaxCalculate += (number_format($orderplaced->get_item_tax($Item),2,'.','')*$Item['qty']);
 				}
 			}
 			
@@ -505,7 +513,7 @@ class clickandpledge_request {
 				}
 			}
 		}
-	
+		
 		if($orderplaced->needs_shipping_address()) {
 		//if(isset($orderplaced->order_shipping)){
 			$shipping=$dom->createElement('Shipping','');
@@ -527,13 +535,16 @@ class clickandpledge_request {
 				$ShippingValue = number_format(($orderplaced->order_shipping/$params['clickandpledge_Installment']), 2, '.', '')*100;
 				$shipping_value = $dom->createElement('ShippingValue', $ShippingValue);
 				$shipping_value=$shipping->appendChild($shipping_value);
+				$ShippingValueCalculate += number_format(($orderplaced->order_shipping/$params['clickandpledge_Installment']), 2, '.', '');
 				} else {
 				$shipping_value = $dom->createElement('ShippingValue',number_format($orderplaced->order_shipping, 2, '.', '')*100);
 				$shipping_value=$shipping->appendChild($shipping_value);
+				$ShippingValueCalculate += number_format($orderplaced->order_shipping, 2, '.', '');
 				}
 			} else {
 			$shipping_value = $dom->createElement('ShippingValue',number_format($orderplaced->order_shipping, 2, '.', '')*100);
 			$shipping_value=$shipping->appendChild($shipping_value);
+			$ShippingValueCalculate += number_format($orderplaced->order_shipping, 2, '.', '');
 			}
 
 			if( $orderplaced->order_shipping_tax )
@@ -543,15 +554,18 @@ class clickandpledge_request {
 					$ShippingTax = number_format( (($orderplaced->order_shipping_tax/$params['clickandpledge_Installment'])), 2, '.', '' )*100;	
 					$shipping_tax=$dom->createElement('ShippingTax',$ShippingTax);
 					$shipping_tax=$shipping->appendChild($shipping_tax);
+					$ShippingTaxCalculate += number_format( (($orderplaced->order_shipping_tax/$params['clickandpledge_Installment'])), 2, '.', '' );
 					} else {
 					$ShippingTax = number_format( ($orderplaced->order_shipping_tax), 2, '.', '' )*100;	
 					$shipping_tax=$dom->createElement('ShippingTax',$ShippingTax);
 					$shipping_tax=$shipping->appendChild($shipping_tax);
+					$ShippingTaxCalculate += number_format( ($orderplaced->order_shipping_tax), 2, '.', '' );
 					}
 				} else {
 				$ShippingTax = number_format( ($orderplaced->order_shipping_tax), 2, '.', '' )*100;	
 				$shipping_tax=$dom->createElement('ShippingTax',$ShippingTax);
 				$shipping_tax=$shipping->appendChild($shipping_tax);
+				$ShippingTaxCalculate += number_format( ($orderplaced->order_shipping_tax), 2, '.', '' );
 				}
 			}			
 		}
@@ -661,6 +675,7 @@ class clickandpledge_request {
 		if($TotalDiscount) {		
 		$total_discount=$dom->createElement('TotalDiscount', $TotalDiscount);
 		$total_discount=$trans_totals->appendChild($total_discount);
+		$TotalDiscountCalculate = $TotalDiscount;
 		}
 		//echo '<pre>';
 		//print_r($orderplaced);
@@ -677,19 +692,20 @@ class clickandpledge_request {
 		{
 			$order_shipping_tax = $orderplaced->order_shipping_tax;
 		}
-		$TotalTax = $order_tax+$order_shipping_tax;		
-		if($TotalTax) {
+		$TotalTax = $order_tax+$order_shipping_tax;
+		$TotalTaxCalculate = $UnitTaxCalculate+$ShippingTaxCalculate;
+		
+		if($TotalTaxCalculate) {
 			if( isset($params['clickandpledge_isRecurring']) &&  $params['clickandpledge_isRecurring'] == 'on' ) {
 				if($params['clickandpledge_RecurringMethod'] == 'Installment') {
-				$TotalTax = number_format(($TotalTax/$params['clickandpledge_Installment']), 2, '.', '')*100;
-				$total_tax=$dom->createElement('TotalTax', $TotalTax);
+				$total_tax=$dom->createElement('TotalTax', number_format($TotalTaxCalculate, 2, '.', '')*100);
 				$total_tax=$trans_totals->appendChild($total_tax);
 				} else {
-				$total_tax=$dom->createElement('TotalTax',number_format($TotalTax, 2, '.', '')*100);
+				$total_tax=$dom->createElement('TotalTax',number_format($TotalTaxCalculate, 2, '.', '')*100);
 				$total_tax=$trans_totals->appendChild($total_tax);
 				}
 			} else {
-			$total_tax=$dom->createElement('TotalTax',number_format($TotalTax, 2, '.', '')*100);
+			$total_tax=$dom->createElement('TotalTax',number_format($TotalTaxCalculate, 2, '.', '')*100);
 			$total_tax=$trans_totals->appendChild($total_tax);
 			}
 		}
@@ -713,16 +729,19 @@ class clickandpledge_request {
 		
 		if( isset($params['clickandpledge_isRecurring']) &&  $params['clickandpledge_isRecurring'] == 'on' ) {
 			if($params['clickandpledge_RecurringMethod'] == 'Installment') {
-			$Total = ( $UnitPrice + $UnitTax + $ShippingValue + $ShippingTax ) - ($TotalDiscount);
+			//$Total = number_format((( $UnitPriceCalculate + $UnitTaxCalculate + $ShippingValueCalculate + $ShippingTaxCalculate ) - ($TotalDiscount))/$params['clickandpledge_Installment'], 2, '.', '');
+			$Total = number_format((( $UnitPriceCalculate + $UnitTaxCalculate + $ShippingValueCalculate + $ShippingTaxCalculate ) - ($TotalDiscount)), 2, '.', '');
 			//$Total = $UnitPrice + $UnitTax + $ShippingValue + $ShippingTax;	
-			$total_amount=$dom->createElement('Total', $Total);
+			$total_amount=$dom->createElement('Total', $Total*100);
 			$total_amount=$trans_totals->appendChild($total_amount);
 			} else {
-			$total_amount=$dom->createElement('Total',($orderplaced->order_total*100));
+			$Total = ( $UnitPriceCalculate + $UnitTaxCalculate + $ShippingValueCalculate + $ShippingTaxCalculate ) - ($TotalDiscount);
+			$total_amount=$dom->createElement('Total',$Total*100);
 			$total_amount=$trans_totals->appendChild($total_amount);
 			}
 		} else {
-		$total_amount=$dom->createElement('Total',($orderplaced->order_total*100));
+		$Total = ( $UnitPriceCalculate + $UnitTaxCalculate + $ShippingValueCalculate + $ShippingTaxCalculate ) - ($TotalDiscount);
+		$total_amount=$dom->createElement('Total',$Total*100);
 		$total_amount=$trans_totals->appendChild($total_amount);
 		}
 		

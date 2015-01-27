@@ -1,6 +1,6 @@
 *** Click & Pledge Changelog ***
-2014.11.27 - Version 1.2.3
-* Added ShippingContactInformation Node
+2015.01.27 - Version 1.2.3
+* Fixed issue for total amount for decimal values
 
 2014.11.20 - Version 1.2.2
 * Fixed SKU issue for variable products (Ref: https://github.com/ClickandPledge/WordPress-WooCommerce/issues/1#issuecomment-62725847).

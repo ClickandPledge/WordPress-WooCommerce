@@ -348,20 +348,7 @@ function woocommerce_clickandpledge_init() {
 								'disabled' => true,
 								'description' => __( '', 'woothemes' ), 
 							),
-				'Installment' => array(
-								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">Installment</span>', 'woothemes' ), 
-								'type' => 'checkbox', 
-								'description' => __( 'Installment (example: Split $1000 into 10 payments of $100 each)', 'woothemes' ), 
-								'default' => false,
-							),
-				'maxrecurrings_Installment' => array(
-								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">Installment Max. Recurrings Allowed</span>', 'woothemes' ), 
-								'label' => __( 'Restrict user to enter recurrings', 'woothemes' ), 
-								'type' => 'text',
-								'description' => __( 'Maximum number of payments allowed , range is 2-998.', 'woothemes' ),
-								'style' => 'maxlength:3',
-							), 
-							
+				
 				'Subscription' => array(
 								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">Subscription</span>', 'woothemes' ), 
 								'type' => 'checkbox', 
@@ -374,7 +361,21 @@ function woocommerce_clickandpledge_init() {
 								'type' => 'text',
 								'description' => __( 'Maximum number of payments allowed , range is 2-999.', 'woothemes' ),
 								'style' => 'maxlength:3',
-							), 
+							),
+				'Installment' => array(
+								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">Installment</span>', 'woothemes' ), 
+								'type' => 'checkbox', 
+								'description' => __( 'Installment (example: Split $1000 into 10 payments of $100 each)', 'woothemes' ), 
+								'default' => false,
+							),
+				'maxrecurrings_Installment' => array(
+								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">Installment Max. Recurrings Allowed</span>', 'woothemes' ), 
+								'label' => __( 'Restrict user to enter recurrings', 'woothemes' ), 
+								'type' => 'text',
+								'description' => __( 'Maximum number of payments allowed , range is 2-998.', 'woothemes' ),
+								'style' => 'maxlength:3',
+							),	
+				 
 				
 				'indefinite' => array(
 								'title' => __( 'Enable Indefinite Recurring', 'woothemes' ), 
@@ -763,8 +764,14 @@ function woocommerce_clickandpledge_init() {
 					if(jQuery('#clickandpledge_isRecurring').is(':checked')) {					
 							jQuery('#clickandpledge_Periodicity_p').show();
 							jQuery('#clickandpledge_RecurringMethod_p').show();
-							if(jQuery('#clickandpledge_indefinite').length)
-								jQuery('#clickandpledge_indefinite_p').show();
+							if(jQuery('#clickandpledge_indefinite').length) {
+								if(jQuery('#clickandpledge_RecurringMethod').val() == 'Installment') {
+								jQuery('#clickandpledge_indefinite_p').hide();
+								} else {
+									jQuery('#clickandpledge_indefinite_p').show();
+								}
+								//jQuery('#clickandpledge_indefinite_p').show();
+							}
 						} else {
 							jQuery('#clickandpledge_Periodicity_p').hide();
 							jQuery('#clickandpledge_RecurringMethod_p').hide();
