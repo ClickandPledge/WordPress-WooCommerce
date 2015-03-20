@@ -6,9 +6,9 @@ Tags:              clickandpledge,woothemes,woocommerce,payment gateway,payment,
 Author URI:        http://www.clickandpledge.com
 Author:            Click & Pledge
 Requires at least: 3.0.1 
-Tested up to:      4.0
-Stable tag:        1.2.1
-Version:           1.2.1
+Tested up to:      4.1.1 (WordPress)
+Tested up to:      2.3.5 (WooCommerce)
+Version:           3.000.000.000.20150320
 License: GPLv2 or later
 
 == Description ==

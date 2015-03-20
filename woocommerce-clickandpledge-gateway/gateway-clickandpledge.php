@@ -48,11 +48,20 @@ function woocommerce_clickandpledge_init() {
 			$this->AccountID 	= $this->settings['AccountID'];
 			$this->AccountGuid 	= $this->settings['AccountGuid'];
 			$this->testmode 		= $this->settings['testmode'];
+			$this->defaultpayment = $this->settings['DefaultpaymentMethod'];
 			$this->Periodicity = array();
 			$this->RecurringMethod = array();
 			$this->available_cards = array();
 			$this->maxrecurrings_Installment 	= $this->settings['maxrecurrings_Installment'];
 			$this->maxrecurrings_Subscription 	= $this->settings['maxrecurrings_Subscription'];
+			if(isset($this->settings['CreditCard']) && $this->settings['CreditCard'] == 'yes')
+			$this->Paymentmethods['CreditCard'] = 'Credit Card';
+			if(isset($this->settings['eCheck']) && $this->settings['eCheck'] == 'yes')
+			$this->Paymentmethods['eCheck'] = 'eCheck';
+			if(isset($this->settings['Invoice']) && $this->settings['Invoice'] == 'yes')
+			$this->Paymentmethods['Invoice'] = 'Invoice';
+			if(isset($this->settings['PurchaseOrder']) && $this->settings['PurchaseOrder'] == 'yes')
+			$this->Paymentmethods['PurchaseOrder'] = 'Purchase Order';
 			
 			//Available Credit Cards
 			if((isset($this->settings['Visa']) && ($this->settings['Visa'] == 'yes') )){
@@ -171,98 +180,106 @@ function woocommerce_clickandpledge_init() {
 							), 
 							
 				'title' => array(
-								'title' => __( 'Title', 'woothemes' ), 
+								'title' => __( 'Title <span style="color: #ff0000;">*</span>', 'woothemes' ), 
 								'type' => 'text', 
 								'description' => __( 'This controls the title which the user sees during checkout.', 'woothemes' ), 
-								'default' => __( 'Credit Card', 'woothemes' )
+								'default' => __( 'Credit Card', 'woothemes' ),
+								'desc_tip'    => true,
 							), 
 				
 				'description' => array(
 								'title' => __( 'Description', 'woothemes' ), 
 								'type' => 'text', 
 								'description' => __( 'The payment description.', 'woothemes' ), 
-								'default' => 'Pay with your Credit Card.'
+								'default' => 'Pay with your Credit Card.',
+								'desc_tip'    => true,
 							),  
 				
 				'AccountID' => array(
-								'title' => __( 'C&P Account ID', 'woothemes' ), 
+								'title' => __( 'C&P Account ID <span style="color: #ff0000;">*</span>', 'woothemes' ), 
 								'type' => 'text', 
 								'description' => __( 'Get your "Account ID" from Click & Pledge. [Portal > Account Info > API Information].', 'woothemes' ), 
 								'default' => '',
 								'class' => 'required',
+								'desc_tip'    => true,
 							), 
 				'AccountGuid' => array(
-								'title' => __( 'C&P API Account GUID', 'woothemes' ), 
+								'title' => __( 'C&P API Account GUID <span style="color: #ff0000;">*</span>', 'woothemes' ), 
 								'type' => 'text', 
 								'description' => __( 'Get your "API Account GUID" from Click & Pledge [Portal > Account Info > API Information].', 'woothemes' ), 
 								'default' => '',
-								'maxlength' => 200
+								'maxlength' => 200,
+								'desc_tip'    => true,
 							),
 											
 				
 							
-				'AcceptedCreditCards' => array(
-								'title' => __( 'Accepted Credit Cards', 'woothemes' ), 
-								'type' => 'text',
-								'css'     => 'display:none;',
-								'disabled' => true,
-								'description' => __( '', 'woothemes' ), 
+				'Paymentmethods' => array(
+								'title' => __( 'Payment Methods', 'woothemes' ), 
+								'type' => 'title',
 							),
-				'Visa' => array(
-								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">Visa</span>', 'woothemes' ), 
+
+				'CreditCard' => array(
+								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">Credit Card</span>', 'woothemes' ), 
 								'type' => 'checkbox', 
 								'description' => __( '', 'woothemes' ), 
-								'default' => false,
+								'default' => 'yes',
+								'label'       => __( ' ', 'woocommerce' ),
 							),
-				'American_Express' => array(
-								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">American Express</span>', 'woothemes' ), 
+				'eCheck' => array(
+								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">eCheck</span>', 'woothemes' ), 
 								'type' => 'checkbox', 
-								'description' => __( '', 'woothemes' ), 
-								'default' => false,
+								'description' => __( '', 'woothemes' ),
+								'label'       => __( ' ', 'woocommerce' ),
 							),
-				'Discover' => array(
-								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">Discover</span>', 'woothemes' ), 
+				'Invoice' => array(
+								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">Invoice</span>', 'woothemes' ), 
 								'type' => 'checkbox', 
-								'description' => __( '', 'woothemes' ), 
-								'default' => false,
+								'description' => __( '', 'woothemes' ),
+								'label'       => __( ' ', 'woocommerce' ),
+							),
+				'PurchaseOrder' => array(
+								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">Purchase Order</span>', 'woothemes' ), 
+								'type' => 'checkbox', 
+								'description' => __( '', 'woothemes' ),
+								'label'       => __( ' ', 'woocommerce' ),
 							),			
-				'MasterCard' => array(
-								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">MasterCard</span>', 'woothemes' ), 
-								'type' => 'checkbox', 
-								'description' => __( '', 'woothemes' ), 
-								'default' => false,
-							),
-				'JCB' => array(
-								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">JCB</span>', 'woothemes' ), 
-								'type' => 'checkbox', 
-								'description' => __( '', 'woothemes' ), 
-								'default' => false,
-							),
-							
 				
+				'DefaultpaymentMethod' => array(
+								'title' => __( 'Default Payment Method', 'woothemes' ), 
+								'type' => 'select',
+								'class' => '',
+								'options'     => array(
+									  '' => 'Please select',
+									  'CreditCard'	=> 'Credit Card',
+									  'eCheck'	=> 'eCheck',
+									  'Invoice'	=> 'Invoice',
+									  'PurchaseOrder'	=> 'Purchase Order',
+								),
+							),
+				
+							
+				'ReceiptSettings' => array(
+								'title' => __( 'Receipt Settings', 'woothemes' ), 
+								'type' => 'title',
+								'class' => 'ReceiptSettingsSection',
+							),
 				'cnp_email_customer' => array(
 								'title' => __( 'Send Receipt to Patron', 'woothemes' ), 
 								'type' => 'checkbox', 
 								'description' => __( '', 'woothemes' ), 
-								'default' => true,
+								'default' => 'yes',
+								'label'       => __( ' ', 'woocommerce' ),
 							),
 							
 				'OrganizationInformation' => array(
-								'title' => __( 'Organization information', 'woothemes' ), 
+								'title' => __( 'Receipt Header', 'woothemes' ), 
 								'type' => 'textarea', 
 								'description' => __( 'Maximum: 1500 characters, the following HTML tags are allowed:
 &lt;P&gt;&lt;/P&gt;&lt;BR /&gt;&lt;OL&gt;&lt;/OL&gt;&lt;LI&gt;&lt;/LI&gt;&lt;UL&gt;&lt;/UL&gt;.  You have <span id="OrganizationInformation_countdown">1500</span> characters left.', 'woothemes' ), 
 								'default' => '',
 								'maxlength' => 1500,
-							),
-				'ThankYouMessage' => array(
-								'title' => __( 'Thank You message', 'woothemes' ), 
-								'type' => 'textarea', 
-								'description' => __( 'Maximum: 500 characters, the following HTML tags are allowed:
-&lt;P&gt;&lt;/P&gt;&lt;BR /&gt;&lt;OL&gt;&lt;/OL&gt;&lt;LI&gt;&lt;/LI&gt;&lt;UL&gt;&lt;/UL&gt;. You have <span id="ThankYouMessage_countdown">500</span> characters left.', 'woothemes' ), 
-								'default' => '',
-								'maxlength' => 500
-							),
+							),				
 				'TermsCondition' => array(
 								'title' => __( 'Terms & Conditions', 'woothemes' ), 
 								'type' => 'textarea', 
@@ -270,6 +287,56 @@ function woocommerce_clickandpledge_init() {
 &lt;P&gt;&lt;/P&gt;&lt;BR /&gt;&lt;OL&gt;&lt;/OL&gt;&lt;LI&gt;&lt;/LI&gt;&lt;UL&gt;&lt;/UL&gt;. <br>Maximum: 1500 characters, You have <span id="TermsCondition_countdown">1500</span> characters left.', 'woothemes' ), 
 								'default' => '',
 								'maxlength' => 1500
+							),
+				
+				
+				'AcceptedCreditCards' => array(
+								'title' => __( 'Accepted Credit Cards', 'woothemes' ), 
+								'type' => 'title',
+								'class' => 'CredicardSection',
+							),
+				'Visa' => array(
+								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">Visa</span>', 'woothemes' ), 
+								'type' => 'checkbox', 
+								'description' => __( '', 'woothemes' ), 
+								'default' => 'yes',
+								'label'       => __( ' ', 'woocommerce' ),
+							),
+				'American_Express' => array(
+								'title' => __( '<span style="padding-left:79px;">American Express</span>', 'woothemes' ), 
+								'type' => 'checkbox', 
+								'description' => __( '', 'woothemes' ), 
+								'default' => 'yes',
+								'label'       => __( ' ', 'woocommerce' ),
+							),
+				'Discover' => array(
+								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">Discover</span>', 'woothemes' ), 
+								'type' => 'checkbox', 
+								'description' => __( '', 'woothemes' ), 
+								'default' => 'yes',
+								'label'       => __( ' ', 'woocommerce' ),
+							),			
+				'MasterCard' => array(
+								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">MasterCard</span>', 'woothemes' ), 
+								'type' => 'checkbox', 
+								'description' => __( '', 'woothemes' ), 
+								'default' => 'yes',
+								'label'       => __( ' ', 'woocommerce' ),
+							),
+				'JCB' => array(
+								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">JCB</span>', 'woothemes' ), 
+								'type' => 'checkbox', 
+								'description' => __( '', 'woothemes' ), 
+								'default' => 'yes',
+								'label'       => __( ' ', 'woocommerce' ),
+							),
+							
+				
+				
+				'RecurringSection' => array(
+								'title' => __( 'Recurring Settings', 'woothemes' ), 
+								'type' => 'title',
+								'class' => 'RecurringSection',
 							),
 				'isRecurring' => array(
 								'title' => __( 'Recurring Transaction', 'woothemes' ), 
@@ -303,42 +370,49 @@ function woocommerce_clickandpledge_init() {
 								'type' => 'checkbox', 
 								'description' => __( '', 'woothemes' ), 
 								'default' => false,
+								'label' => __(' '),
 							),
 				'2_Weeks' => array(
 								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">2 Weeks</span>', 'woothemes' ), 
 								'type' => 'checkbox', 
 								'description' => __( '', 'woothemes' ), 
-								'default' => false,
+								'default' => 'yes',
+								'label' => __(' '),
 							),
 				'Month' => array(
 								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">Month</span>', 'woothemes' ), 
 								'type' => 'checkbox', 
 								'description' => __( '', 'woothemes' ), 
-								'default' => false,
+								'default' => 'yes',
+								'label' => __(' '),
 							),
 				'2_Months' => array(
 								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">2 Months</span>', 'woothemes' ), 
 								'type' => 'checkbox', 
 								'description' => __( '', 'woothemes' ), 
 								'default' => false,
+								'label' => __(' '),
 							),
 				'Quarter' => array(
 								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">Quarter</span>', 'woothemes' ), 
 								'type' => 'checkbox', 
 								'description' => __( '', 'woothemes' ), 
-								'default' => false,
+								'default' => 'yes',
+								'label' => __(' '),
 							),
 				'6_Months' => array(
 								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">6 Months</span>', 'woothemes' ), 
 								'type' => 'checkbox', 
 								'description' => __( '', 'woothemes' ), 
 								'default' => false,
+								'label' => __(' '),
 							),
 				'Year' => array(
 								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">Year</span>', 'woothemes' ), 
 								'type' => 'checkbox', 
 								'description' => __( '', 'woothemes' ), 
 								'default' => false,
+								'label' => __(' '),
 							),
 							
 				'RecurringMethod' => array(
@@ -353,27 +427,33 @@ function woocommerce_clickandpledge_init() {
 								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">Subscription</span>', 'woothemes' ), 
 								'type' => 'checkbox', 
 								'description' => __( 'Subscription (example: Pay $10 every month for 20 times)', 'woothemes' ), 
-								'default' => false,
+								'default' => 'yes',
+								'label' => __(' '),
+								'desc_tip'    => true,
 							),
 				'maxrecurrings_Subscription' => array(
-								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">Subscription Max. Recurrings Allowed</span>', 'woothemes' ), 
+								'title' => __( '<span style="padding-left:0px;">Subscription Max. Recurrings Allowed</span>', 'woothemes' ), 
 								'label' => __( 'Restrict user to enter recurrings', 'woothemes' ), 
 								'type' => 'text',
 								'description' => __( 'Maximum number of payments allowed , range is 2-999.', 'woothemes' ),
 								'style' => 'maxlength:3',
+								'desc_tip'    => true,
 							),
 				'Installment' => array(
 								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">Installment</span>', 'woothemes' ), 
 								'type' => 'checkbox', 
 								'description' => __( 'Installment (example: Split $1000 into 10 payments of $100 each)', 'woothemes' ), 
-								'default' => false,
+								'default' => 'yes',
+								'label' => __(' '),
+								'desc_tip'    => true,
 							),
 				'maxrecurrings_Installment' => array(
-								'title' => __( '<span style="padding-left:'.$paddingleft.'px;">Installment Max. Recurrings Allowed</span>', 'woothemes' ), 
+								'title' => __( '<span style="padding-left:0px;">Installment Max. Recurrings Allowed</span>', 'woothemes' ), 
 								'label' => __( 'Restrict user to enter recurrings', 'woothemes' ), 
 								'type' => 'text',
 								'description' => __( 'Maximum number of payments allowed , range is 2-998.', 'woothemes' ),
 								'style' => 'maxlength:3',
+								'desc_tip'    => true,
 							),	
 				 
 				
@@ -382,7 +462,9 @@ function woocommerce_clickandpledge_init() {
 								'label' => __( 'Enable Indefinite Recurring', 'woothemes' ), 
 								'type' => 'checkbox', 
 								'description' => __( 'Recurring transactions will process until cancelled.', 'woothemes' ), 
-								'default' => 'no'
+								'default' => 'no',
+								'label' => __(' '),
+								'desc_tip'    => true,
 							),
 				
 				);
@@ -403,12 +485,77 @@ function woocommerce_clickandpledge_init() {
 			
 			jQuery(document).ready(function(){
 				
-				limitText(jQuery('#woocommerce_clickandpledge_OrganizationInformation'),jQuery('#OrganizationInformation_countdown'),1500);
-				
-				limitText(jQuery('#woocommerce_clickandpledge_ThankYouMessage'),jQuery('#ThankYouMessage_countdown'),500);
-				
+				limitText(jQuery('#woocommerce_clickandpledge_OrganizationInformation'),jQuery('#OrganizationInformation_countdown'),1500);	
 				limitText(jQuery('#woocommerce_clickandpledge_TermsCondition'),jQuery('#TermsCondition_countdown'),1500);
+				displaycheck();
+				recurringdisplay();
 				
+				function displaycheck() {				
+					/*
+					if(jQuery('#woocommerce_clickandpledge_cnp_email_customer').is(':checked')) {
+						jQuery('#woocommerce_clickandpledge_OrganizationInformation').closest('tr').show();
+						jQuery('#woocommerce_clickandpledge_TermsCondition').closest('tr').show();
+					} else {
+						jQuery('#woocommerce_clickandpledge_OrganizationInformation').closest('tr').hide();
+						jQuery('#woocommerce_clickandpledge_TermsCondition').closest('tr').hide();
+					}
+					*/
+					if(!jQuery('#woocommerce_clickandpledge_CreditCard').is(':checked') && !jQuery('#woocommerce_clickandpledge_eCheck').is(':checked')) {
+						jQuery('.CredicardSection').next('table').hide();
+						jQuery('.CredicardSection').hide();
+							
+						jQuery('.RecurringSection').next('table').hide();
+						jQuery('.RecurringSection').hide();
+					} else {
+						if(jQuery('#woocommerce_clickandpledge_CreditCard').is(':checked')) {
+							jQuery('.CredicardSection').next('table').show();
+							jQuery('.CredicardSection').show();
+						} else {
+							jQuery('.CredicardSection').next('table').hide();
+							jQuery('.CredicardSection').hide();
+						}
+						
+						if(jQuery('#woocommerce_clickandpledge_CreditCard').is(':checked') || jQuery('#woocommerce_clickandpledge_eCheck').is(':checked')) {
+							jQuery('.RecurringSection').next('table').show();
+							jQuery('.RecurringSection').show();
+						}
+					}
+					defaultpayment();
+				}
+				function defaultpayment() {
+					var paymethods = [];
+					var paymethods_titles = [];
+					var str = '';
+					var defaultval = jQuery('#woocommerce_clickandpledge_DefaultpaymentMethod').val();
+					if(jQuery('#woocommerce_clickandpledge_CreditCard').is(':checked')) {
+						paymethods.push('CreditCard');
+						paymethods_titles.push('Credit Card');
+					}
+					if(jQuery('#woocommerce_clickandpledge_eCheck').is(':checked')) {
+						paymethods.push('eCheck');
+						paymethods_titles.push('eCheck');
+					}
+					if(jQuery('#woocommerce_clickandpledge_Invoice').is(':checked')) {
+						paymethods.push('Invoice');
+						paymethods_titles.push('Invoice');
+					}
+					if(jQuery('#woocommerce_clickandpledge_PurchaseOrder').is(':checked')) {
+						paymethods.push('PurchaseOrder');
+						paymethods_titles.push('Purchase Order');
+					}
+					if(paymethods.length > 0) {
+						for(var i = 0; i < paymethods.length; i++) {
+							if(paymethods[i] == defaultval) {
+							str += '<option value="'+paymethods[i]+'" selected>'+paymethods_titles[i]+'</option>';
+							} else {
+							str += '<option value="'+paymethods[i]+'">'+paymethods_titles[i]+'</option>';
+							}
+						}
+					} else {
+					 str = '<option selected="selected" value="">Please select</option>';
+					}
+					jQuery('#woocommerce_clickandpledge_DefaultpaymentMethod').html(str);
+				}
 				jQuery( "form" ).submit(function( event ) {
 					if(jQuery('#woocommerce_clickandpledge_title').val() == '')
 					{
@@ -423,13 +570,49 @@ function woocommerce_clickandpledge_init() {
 						jQuery('#woocommerce_clickandpledge_AccountID').focus();
 						return false;
 					}
-					
+					if(jQuery('#woocommerce_clickandpledge_AccountID').val().length > 10)
+					{
+						alert('Please enter only 10 digits');
+						jQuery('#woocommerce_clickandpledge_AccountID').focus();
+						return false;
+					}					
 					if(jQuery('#woocommerce_clickandpledge_AccountGuid').val() == '')
 					{
 						alert('Please enter AccountGuid');
 						jQuery('#woocommerce_clickandpledge_AccountGuid').focus();
 						return false;
 					}
+					if(jQuery('#woocommerce_clickandpledge_AccountGuid').val().length != 36)
+					{
+						alert('AccountGuid should be 36 characters');
+						jQuery('#woocommerce_clickandpledge_AccountGuid').focus();
+						return false;
+					}
+					
+					var paymethods = 0;
+					if(jQuery('#woocommerce_clickandpledge_CreditCard').is(':checked'))
+					{
+						paymethods++;
+					}
+					if(jQuery('#woocommerce_clickandpledge_eCheck').is(':checked'))
+					{
+						paymethods++;
+					}
+					if(jQuery('#woocommerce_clickandpledge_Invoice').is(':checked'))
+					{
+						paymethods++;
+					}
+					if(jQuery('#woocommerce_clickandpledge_PurchaseOrder').is(':checked'))
+					{
+						paymethods++;
+					}
+					
+					if(paymethods == 0) {
+						alert('Please select at least  one payment method');
+						jQuery('#woocommerce_clickandpledge_CreditCard').focus();
+						return false;
+					}
+					
 					
 					var cards = 0;
 					if(jQuery('#woocommerce_clickandpledge_Visa').is(':checked'))
@@ -453,12 +636,12 @@ function woocommerce_clickandpledge_init() {
 						cards++;
 					}
 					
-					if(cards == 0) 
-					{
+					if(jQuery('#woocommerce_clickandpledge_CreditCard').is(':checked') && cards == 0) {						
 						alert('Please select at least  one card');
 						jQuery('#woocommerce_clickandpledge_Visa').focus();
-						return false;
+						return false;						
 					}
+					
 					if(jQuery('#woocommerce_clickandpledge_isRecurring').val() == 1)
 					{
 						if(jQuery('#woocommerce_clickandpledge_RecurringLabel').val() == '')
@@ -517,13 +700,13 @@ function woocommerce_clickandpledge_init() {
 						
 						if(jQuery('#woocommerce_clickandpledge_maxrecurrings_Subscription').val() < 2)
 						{
-							alert('Please enter value greater than 1');
+							alert('Please enter Subscription Max. Recurrings Allowed greater than 1');
 							jQuery('#woocommerce_clickandpledge_maxrecurrings_Subscription').focus();
 							return false;
 						}
 						if(jQuery('#woocommerce_clickandpledge_maxrecurrings_Subscription').val() > 999)
 						{
-							alert('Please enter value between 2-999');
+							alert('Please enter Subscription Max. Recurrings Allowed between 2-999');
 							jQuery('#woocommerce_clickandpledge_maxrecurrings_Subscription').focus();
 							return false;
 						}
@@ -537,6 +720,11 @@ function woocommerce_clickandpledge_init() {
 						limitCount.html (limitNum - limitField.val().length);
 					}
 				}
+				
+				
+				
+				///////Events Start
+				
 				//OrganizationInformation
 				jQuery('#woocommerce_clickandpledge_OrganizationInformation').keydown(function(){
 					limitText(jQuery('#woocommerce_clickandpledge_OrganizationInformation'),jQuery('#OrganizationInformation_countdown'),1500);
@@ -544,12 +732,59 @@ function woocommerce_clickandpledge_init() {
 				jQuery('#woocommerce_clickandpledge_OrganizationInformation').keyup(function(){
 					limitText(jQuery('#woocommerce_clickandpledge_OrganizationInformation'),jQuery('#OrganizationInformation_countdown'),1500);
 				});
-				//ThankYouMessage
-				jQuery('#woocommerce_clickandpledge_ThankYouMessage').keydown(function(){
-					limitText(jQuery('#woocommerce_clickandpledge_ThankYouMessage'),jQuery('#ThankYouMessage_countdown'),500);
+				/*
+				//Receipt Settings
+				jQuery('#woocommerce_clickandpledge_cnp_email_customer').click(function(){
+					if(jQuery('#woocommerce_clickandpledge_cnp_email_customer').is(':checked')) {
+						jQuery('#woocommerce_clickandpledge_OrganizationInformation').closest('tr').show();
+						jQuery('#woocommerce_clickandpledge_TermsCondition').closest('tr').show();
+					} else {
+						jQuery('#woocommerce_clickandpledge_OrganizationInformation').closest('tr').hide();
+						jQuery('#woocommerce_clickandpledge_TermsCondition').closest('tr').hide();
+					}
 				});
-				jQuery('#woocommerce_clickandpledge_ThankYouMessage').keyup(function(){
-					limitText(jQuery('#woocommerce_clickandpledge_ThankYouMessage'),jQuery('#ThankYouMessage_countdown'),500);
+				*/
+				//Payment Methods
+				jQuery('#woocommerce_clickandpledge_CreditCard').click(function(){
+					if(jQuery('#woocommerce_clickandpledge_CreditCard').is(':checked')) {
+						jQuery('.CredicardSection').next('table').show();
+						jQuery('.CredicardSection').show();
+					} else {
+						jQuery('.CredicardSection').next('table').hide();
+						jQuery('.CredicardSection').hide();
+					}
+					
+					if(!jQuery('#woocommerce_clickandpledge_CreditCard').is(':checked') && !jQuery('#woocommerce_clickandpledge_eCheck').is(':checked')) {
+						jQuery('.RecurringSection').next('table').hide();
+						jQuery('.RecurringSection').hide();
+					} else {
+						if(jQuery('#woocommerce_clickandpledge_CreditCard').is(':checked') || jQuery('#woocommerce_clickandpledge_eCheck').is(':checked')) {
+							jQuery('.RecurringSection').next('table').show();
+							jQuery('.RecurringSection').show();
+						}
+					}
+					defaultpayment();
+				});
+				jQuery('#woocommerce_clickandpledge_eCheck').click(function(){
+					if(!jQuery('#woocommerce_clickandpledge_CreditCard').is(':checked') && !jQuery('#woocommerce_clickandpledge_eCheck').is(':checked')) {
+						jQuery('.RecurringSection').next('table').hide();
+						jQuery('.RecurringSection').hide();
+					} else {
+						if(jQuery('#woocommerce_clickandpledge_eCheck').is(':checked') || jQuery('#woocommerce_clickandpledge_eCheck').is(':checked')) {
+							jQuery('.RecurringSection').next('table').show();
+							jQuery('.RecurringSection').show();
+						} else {
+							jQuery('.RecurringSection').next('table').hide();
+							jQuery('.RecurringSection').hide();
+						}
+					}
+					defaultpayment();
+				});				
+				jQuery('#woocommerce_clickandpledge_Invoice').click(function(){
+					defaultpayment();
+				});
+				jQuery('#woocommerce_clickandpledge_PurchaseOrder').click(function(){
+					defaultpayment();
 				});
 				//TermsCondition
 				jQuery('#woocommerce_clickandpledge_TermsCondition').keydown(function(){
@@ -558,70 +793,8 @@ function woocommerce_clickandpledge_init() {
 				jQuery('#woocommerce_clickandpledge_TermsCondition').keyup(function(){
 					limitText(jQuery('#woocommerce_clickandpledge_TermsCondition'),jQuery('#TermsCondition_countdown'),1500);
 				});
-				if(jQuery('#woocommerce_clickandpledge_isRecurring').val() == 1) {
-					jQuery('#woocommerce_clickandpledge_Periodicity').closest('tr').show();
-					jQuery('#woocommerce_clickandpledge_RecurringLabel').closest('tr').show();
-					jQuery('#woocommerce_clickandpledge_Week').closest('tr').show();
-					jQuery('#woocommerce_clickandpledge_2_Weeks').closest('tr').show();
-					jQuery('#woocommerce_clickandpledge_Month').closest('tr').show();
-					jQuery('#woocommerce_clickandpledge_2_Months').closest('tr').show();
-					jQuery('#woocommerce_clickandpledge_Quarter').closest('tr').show();
-					jQuery('#woocommerce_clickandpledge_6_Months').closest('tr').show();
-					jQuery('#woocommerce_clickandpledge_Year').closest('tr').show();
-						
-					jQuery('#woocommerce_clickandpledge_RecurringMethod').closest('tr').show();
-					jQuery('#woocommerce_clickandpledge_Installment').closest('tr').show();
-					jQuery('#woocommerce_clickandpledge_maxrecurrings_Installment').closest('tr').show();
-					jQuery('#woocommerce_clickandpledge_Subscription').closest('tr').show();
-					jQuery('#woocommerce_clickandpledge_maxrecurrings_Subscription').closest('tr').show();
-						
-					jQuery('#woocommerce_clickandpledge_indefinite').closest('tr').show();
-				} else {
-					jQuery('#woocommerce_clickandpledge_Periodicity').closest('tr').hide();
-					jQuery('#woocommerce_clickandpledge_RecurringLabel').closest('tr').hide();
-					jQuery('#woocommerce_clickandpledge_Week').closest('tr').hide();
-					jQuery('#woocommerce_clickandpledge_2_Weeks').closest('tr').hide();
-					jQuery('#woocommerce_clickandpledge_Month').closest('tr').hide();
-					jQuery('#woocommerce_clickandpledge_2_Months').closest('tr').hide();
-					jQuery('#woocommerce_clickandpledge_Quarter').closest('tr').hide();
-					jQuery('#woocommerce_clickandpledge_6_Months').closest('tr').hide();
-					jQuery('#woocommerce_clickandpledge_Year').closest('tr').hide();
-						
-					jQuery('#woocommerce_clickandpledge_RecurringMethod').closest('tr').hide();
-					jQuery('#woocommerce_clickandpledge_Installment').closest('tr').hide();
-					jQuery('#woocommerce_clickandpledge_maxrecurrings_Installment').closest('tr').hide();
-					jQuery('#woocommerce_clickandpledge_Subscription').closest('tr').hide();
-					jQuery('#woocommerce_clickandpledge_maxrecurrings_Subscription').closest('tr').hide();
-						
-					jQuery('#woocommerce_clickandpledge_indefinite').closest('tr').hide();
-				}
-				if(jQuery('#woocommerce_clickandpledge_Installment').is(':checked')) {
-						jQuery('#woocommerce_clickandpledge_maxrecurrings_Installment').closest('tr').show();
-					} else {
-					jQuery('#woocommerce_clickandpledge_maxrecurrings_Installment').closest('tr').hide();
-					}
-				jQuery('#woocommerce_clickandpledge_Installment').click(function(){
-					if(jQuery('#woocommerce_clickandpledge_Installment').is(':checked')) {
-						jQuery('#woocommerce_clickandpledge_maxrecurrings_Installment').closest('tr').show();
-					} else {
-					jQuery('#woocommerce_clickandpledge_maxrecurrings_Installment').closest('tr').hide();
-					}
-				});
-				
-				if(jQuery('#woocommerce_clickandpledge_Subscription').is(':checked')) {
-						jQuery('#woocommerce_clickandpledge_maxrecurrings_Subscription').closest('tr').show();
-					} else {
-					jQuery('#woocommerce_clickandpledge_maxrecurrings_Subscription').closest('tr').hide();
-					}
-				jQuery('#woocommerce_clickandpledge_Subscription').click(function(){
-					if(jQuery('#woocommerce_clickandpledge_Subscription').is(':checked')) {
-						jQuery('#woocommerce_clickandpledge_maxrecurrings_Subscription').closest('tr').show();
-					} else {
-					jQuery('#woocommerce_clickandpledge_maxrecurrings_Subscription').closest('tr').hide();
-					}
-				});
-				
-				jQuery('#woocommerce_clickandpledge_isRecurring').change(function(){
+				function recurringdisplay() {
+					
 					if(jQuery('#woocommerce_clickandpledge_isRecurring').val() == 1) {
 						jQuery('#woocommerce_clickandpledge_Periodicity').closest('tr').show();
 						jQuery('#woocommerce_clickandpledge_RecurringLabel').closest('tr').show();
@@ -632,14 +805,25 @@ function woocommerce_clickandpledge_init() {
 						jQuery('#woocommerce_clickandpledge_Quarter').closest('tr').show();
 						jQuery('#woocommerce_clickandpledge_6_Months').closest('tr').show();
 						jQuery('#woocommerce_clickandpledge_Year').closest('tr').show();
-						
+							
 						jQuery('#woocommerce_clickandpledge_RecurringMethod').closest('tr').show();
 						jQuery('#woocommerce_clickandpledge_Installment').closest('tr').show();
 						jQuery('#woocommerce_clickandpledge_maxrecurrings_Installment').closest('tr').show();
 						jQuery('#woocommerce_clickandpledge_Subscription').closest('tr').show();
-						jQuery('#woocommerce_clickandpledge_maxrecurrings_Subscription').closest('tr').show();
-						
+						jQuery('#woocommerce_clickandpledge_maxrecurrings_Subscription').closest('tr').show();							
 						jQuery('#woocommerce_clickandpledge_indefinite').closest('tr').show();
+						
+						if(jQuery('#woocommerce_clickandpledge_Installment').is(':checked')) {
+						jQuery('#woocommerce_clickandpledge_maxrecurrings_Installment').closest('tr').show();
+						} else {
+						jQuery('#woocommerce_clickandpledge_maxrecurrings_Installment').closest('tr').hide();
+						}
+						
+						if(jQuery('#woocommerce_clickandpledge_Subscription').is(':checked')) {
+						jQuery('#woocommerce_clickandpledge_maxrecurrings_Subscription').closest('tr').show();
+						} else {
+						jQuery('#woocommerce_clickandpledge_maxrecurrings_Subscription').closest('tr').hide();
+						}
 					} else {
 						jQuery('#woocommerce_clickandpledge_Periodicity').closest('tr').hide();
 						jQuery('#woocommerce_clickandpledge_RecurringLabel').closest('tr').hide();
@@ -650,13 +834,74 @@ function woocommerce_clickandpledge_init() {
 						jQuery('#woocommerce_clickandpledge_Quarter').closest('tr').hide();
 						jQuery('#woocommerce_clickandpledge_6_Months').closest('tr').hide();
 						jQuery('#woocommerce_clickandpledge_Year').closest('tr').hide();
-						
+							
+						jQuery('#woocommerce_clickandpledge_RecurringMethod').closest('tr').hide();
+						jQuery('#woocommerce_clickandpledge_Installment').closest('tr').hide();
+						jQuery('#woocommerce_clickandpledge_maxrecurrings_Installment').closest('tr').hide();
+						jQuery('#woocommerce_clickandpledge_Subscription').closest('tr').hide();
+						jQuery('#woocommerce_clickandpledge_maxrecurrings_Subscription').closest('tr').hide();							
+						jQuery('#woocommerce_clickandpledge_indefinite').closest('tr').hide();						
+					}
+				}
+				
+				
+				jQuery('#woocommerce_clickandpledge_Installment').click(function(){
+					if(jQuery('#woocommerce_clickandpledge_Installment').is(':checked')) {
+						jQuery('#woocommerce_clickandpledge_maxrecurrings_Installment').closest('tr').show();
+					} else {
+					jQuery('#woocommerce_clickandpledge_maxrecurrings_Installment').closest('tr').hide();
+					}
+					indefinite_display();
+				});
+				
+				
+				jQuery('#woocommerce_clickandpledge_Subscription').click(function(){
+					if(jQuery('#woocommerce_clickandpledge_Subscription').is(':checked')) {
+						jQuery('#woocommerce_clickandpledge_maxrecurrings_Subscription').closest('tr').show();
+					} else {
+					jQuery('#woocommerce_clickandpledge_maxrecurrings_Subscription').closest('tr').hide();
+					}
+					indefinite_display();
+				});
+				function indefinite_display() {
+					if(jQuery('#woocommerce_clickandpledge_Subscription').is(':checked')) {
+						jQuery('#woocommerce_clickandpledge_indefinite').closest('tr').show();
+					} else {
+						jQuery('#woocommerce_clickandpledge_indefinite').closest('tr').hide();
+					}
+				}
+				jQuery('#woocommerce_clickandpledge_isRecurring').change(function(){
+					if(jQuery('#woocommerce_clickandpledge_isRecurring').val() == 1) {
+						jQuery('#woocommerce_clickandpledge_Periodicity').closest('tr').show();
+						jQuery('#woocommerce_clickandpledge_RecurringLabel').closest('tr').show();
+						jQuery('#woocommerce_clickandpledge_Week').closest('tr').show();
+						jQuery('#woocommerce_clickandpledge_2_Weeks').closest('tr').show();
+						jQuery('#woocommerce_clickandpledge_Month').closest('tr').show();
+						jQuery('#woocommerce_clickandpledge_2_Months').closest('tr').show();
+						jQuery('#woocommerce_clickandpledge_Quarter').closest('tr').show();
+						jQuery('#woocommerce_clickandpledge_6_Months').closest('tr').show();
+						jQuery('#woocommerce_clickandpledge_Year').closest('tr').show();						
+						jQuery('#woocommerce_clickandpledge_RecurringMethod').closest('tr').show();
+						jQuery('#woocommerce_clickandpledge_Installment').closest('tr').show();
+						jQuery('#woocommerce_clickandpledge_maxrecurrings_Installment').closest('tr').show();
+						jQuery('#woocommerce_clickandpledge_Subscription').closest('tr').show();
+						jQuery('#woocommerce_clickandpledge_maxrecurrings_Subscription').closest('tr').show();						
+						jQuery('#woocommerce_clickandpledge_indefinite').closest('tr').show();
+					} else {
+						jQuery('#woocommerce_clickandpledge_Periodicity').closest('tr').hide();
+						jQuery('#woocommerce_clickandpledge_RecurringLabel').closest('tr').hide();
+						jQuery('#woocommerce_clickandpledge_Week').closest('tr').hide();
+						jQuery('#woocommerce_clickandpledge_2_Weeks').closest('tr').hide();
+						jQuery('#woocommerce_clickandpledge_Month').closest('tr').hide();
+						jQuery('#woocommerce_clickandpledge_2_Months').closest('tr').hide();
+						jQuery('#woocommerce_clickandpledge_Quarter').closest('tr').hide();
+						jQuery('#woocommerce_clickandpledge_6_Months').closest('tr').hide();
+						jQuery('#woocommerce_clickandpledge_Year').closest('tr').hide();						
 						jQuery('#woocommerce_clickandpledge_RecurringMethod').closest('tr').hide();
 						jQuery('#woocommerce_clickandpledge_Installment').closest('tr').hide();
 						jQuery('#woocommerce_clickandpledge_maxrecurrings_Installment').closest('tr').hide();
 						jQuery('#woocommerce_clickandpledge_Subscription').closest('tr').hide();
 						jQuery('#woocommerce_clickandpledge_maxrecurrings_Subscription').closest('tr').hide();
-												
 						jQuery('#woocommerce_clickandpledge_indefinite').closest('tr').hide();
 					}
 				});
@@ -689,9 +934,8 @@ function woocommerce_clickandpledge_init() {
 		/**
 	     * Payment form on checkout page
 	     */
-		function payment_fields() {
-			$user_country = $this->get_country_code();
-			
+		function payment_fields() {			
+			$user_country = $this->get_country_code();			
 			if(empty($user_country)) :
 				echo __('Select a country to see the payment form', 'woothemes');
 				return;
@@ -704,8 +948,53 @@ function woocommerce_clickandpledge_init() {
 			?>
 			<?php if ($this->testmode=='yes') : ?><p><?php _e('TEST MODE/SANDBOX ENABLED', 'woothemes'); ?></p><?php endif; ?>
 			<?php if ($this->description) : ?><p><?php echo $this->description; ?></p><?php endif; ?>
-			
 			<?php 
+			if(count($this->Paymentmethods) > 0) {
+				echo '<span style="width:980px" id="payment_methods">';
+				foreach($this->Paymentmethods as $pkey => $pval) {
+					if($pkey == $this->defaultpayment) {
+					echo '<input type="radio" id="cnp_payment_method_selection_'.$pkey.'" name="cnp_payment_method_selection" class="cnp_payment_method_selection" style="margin: 0 0 0 0;" value="'.$pkey.'" checked>&nbsp<b>'.$pval.'</b>&nbsp;&nbsp;&nbsp;';
+					} else {
+					echo '<input type="radio" id="cnp_payment_method_selection_'.$pkey.'" name="cnp_payment_method_selection" class="cnp_payment_method_selection" style="margin: 0 0 0 0;" value="'.$pkey.'">&nbsp;<b>'.$pval.'</b>&nbsp;&nbsp;&nbsp;';
+					}
+				}
+				echo '</span>';
+			}
+			?>
+			<script>
+				jQuery('#cnp_payment_method_selection_CreditCard').click(function(){
+					jQuery('#cnp_CreditCard_div').show();					
+					jQuery('#cnp_eCheck_div').hide();
+					jQuery('#cnp_Invoice_div').hide();
+					jQuery('#cnp_PurchaseOrder_div').hide();
+					
+				});
+				jQuery('#cnp_payment_method_selection_eCheck').click(function(){
+					jQuery('#cnp_CreditCard_div').hide();					
+					jQuery('#cnp_eCheck_div').show();
+					jQuery('#cnp_Invoice_div').hide();
+					jQuery('#cnp_PurchaseOrder_div').hide();
+					
+				});
+				jQuery('#cnp_payment_method_selection_Invoice').click(function(){
+					jQuery('#cnp_CreditCard_div').hide();					
+					jQuery('#cnp_eCheck_div').hide();
+					jQuery('#cnp_Invoice_div').show();
+					jQuery('#cnp_PurchaseOrder_div').hide();
+					
+				});
+				jQuery('#cnp_payment_method_selection_PurchaseOrder').click(function(){
+					jQuery('#cnp_CreditCard_div').hide();					
+					jQuery('#cnp_eCheck_div').hide();
+					jQuery('#cnp_Invoice_div').hide();
+					jQuery('#cnp_PurchaseOrder_div').show();
+					
+				});
+			</script>
+			
+			<div style="display:<?php if($this->defaultpayment == 'CreditCard') echo 'block'; else echo 'none';?>;" id="cnp_CreditCard_div">
+			<p class="" style="margin:0 0 10px">&nbsp;</p>
+			<?php
 			//print_r($available_cards);
 			if (count($available_cards) > 0) { ?>
 				<p><?php 
@@ -721,8 +1010,6 @@ function woocommerce_clickandpledge_init() {
 					echo "&nbsp;<img src='".WP_PLUGIN_URL . "/" . plugin_basename( dirname(__FILE__)) . "/images/JCB.jpg' title='JCB' alt='JCB'/>";
 				?></p>
 			<?php } ?>
-			
-			<fieldset>
 				<?php 
 				if($this->isRecurring) { ?>
 				<script type="text/javascript">
@@ -805,14 +1092,19 @@ function woocommerce_clickandpledge_init() {
 						
 						jQuery('#clickandpledge_RecurringMethod_p').hide();					
 						if(jQuery('#clickandpledge_RecurringMethod').val() == 'Installment') {
-								jQuery('#clickandpledge_indefinite_p').hide();
+								jQuery('#clickandpledge_indefinite').attr('checked', false);
+								jQuery('#clickandpledge_indefinite_p').hide();								
+								jQuery('#clickandpledge_Installment_req').show();
 						}
 						
 						jQuery('#clickandpledge_RecurringMethod').change(function(){
 							if(jQuery('#clickandpledge_RecurringMethod').val() == 'Installment') {
+								jQuery('#clickandpledge_indefinite').attr('checked', false);
 								jQuery('#clickandpledge_indefinite_p').hide();
+								jQuery('#clickandpledge_Installment_req').show();								
 							} else {
 								jQuery('#clickandpledge_indefinite_p').show();
+								jQuery('#clickandpledge_Installment_req').show();
 							}
 						});	
 						
@@ -825,7 +1117,9 @@ function woocommerce_clickandpledge_init() {
 				<?php endforeach; ?>
 				<script>
 					if(jQuery('#clickandpledge_RecurringMethod').val() == 'Installment') {
+							jQuery('#clickandpledge_indefinite').attr('checked', false);
 							jQuery('#clickandpledge_indefinite_p').hide();
+							jQuery('#clickandpledge_Installment_req').show();
 					}
 				</script>					
 				<?php
@@ -866,13 +1160,10 @@ function woocommerce_clickandpledge_init() {
 					</script>
 					
 				</p>
-				<div class="clear"></div>
+				<div class="clear"></div>				
+				<?php }
 				
-				
-				
-				
-				
-				<?php } ?>
+				?>
 				
 				<p class="">
 					<label for="clickandpledge_cart_number"><?php echo __("Name on Card", 'woocommerce') ?> <span class="required" style="color:red;">*</span></label>
@@ -882,7 +1173,7 @@ function woocommerce_clickandpledge_init() {
 				
 				<p class="form-row form-row-first">
 					<label for="clickandpledge_cart_number"><?php echo __("Credit Card number", 'woocommerce') ?> <span class="required">*</span></label>
-					<input type="text" class="input-text required" name="clickandpledge_card_number" placeholder="Credit Card number" style="color:#141412; font-weight:normal;"/>
+					<input type="text" class="input-text required" name="clickandpledge_card_number" placeholder="Credit Card number" style="color:#141412; font-weight:normal;" maxlength="17"/>
 				</p>
 				<p class="form-row form-row-last">
 					<label for="clickandpledge_card_csc"><?php _e("Card Verification (CVV)", 'woocommerce') ?> <span class="required">*</span></label>
@@ -915,16 +1206,7 @@ function woocommerce_clickandpledge_init() {
 					</script>
 					<span class="help clickandpledge_card_csc_description"></span>
 				</p>
-				<!--
-				<p class="form-row form-row-last">
-					<label for="clickandpledge_cart_type"><?php echo __("Card type", 'woocommerce') ?> <span class="required">*</span></label>
-					<select id="clickandpledge_card_type" name="clickandpledge_card_type" onchange="toggle_csc();">
-						<?php foreach ($available_cards as $card) : ?>
-									<option value="<?php echo $card ?>"><?php echo $card; ?></options>
-						<?php endforeach; ?>
-					</select>
-				</p>
-				-->
+				
 				<div class="clear"></div>
 				
 				<p class="form-row form-row-first">
@@ -954,35 +1236,246 @@ function woocommerce_clickandpledge_init() {
 					</select>
 				</p>
 				
+				<div class="clear"></div>			
+			</div> <!-- Credit Card Section End-->
+			<div style="display:<?php if($this->defaultpayment == 'eCheck') echo 'block'; else echo 'none';?>;" id="cnp_eCheck_div">
+				<p class="" style="margin:0 0 10px">&nbsp;</p>
+				
+				<?php
+				echo "<p><img src='".WP_PLUGIN_URL . "/" . plugin_basename( dirname(__FILE__)) . "/images/eCheck.png' title='eCheck' alt='eCheck'/></p>";
+				if($this->isRecurring) { ?>
+				<script type="text/javascript">
+				jQuery( document ).ready(function(){		
+					if(jQuery('#clickandpledge_isRecurring_echeck').is(':checked')) {
+						jQuery('#clickandpledge_Periodicity_p_echeck').show();
+						jQuery('#clickandpledge_RecurringMethod_p_echeck').show();
+						if(jQuery('#clickandpledge_indefinite_echeck').length)
+								jQuery('#clickandpledge_indefinite_p_echeck').show();
+					} else {
+						jQuery('#clickandpledge_Periodicity_p_echeck').hide();
+						jQuery('#clickandpledge_RecurringMethod_p_echeck').hide();
+						if(jQuery('#clickandpledge_indefinite_echeck').length)
+								jQuery('#clickandpledge_indefinite_echeck').attr('checked', false);
+								jQuery('#clickandpledge_indefinite_p_echeck').hide();
+					}				
+									
+					jQuery('#clickandpledge_indefinite_echeck').click(function(){
+						if(jQuery('#clickandpledge_indefinite_echeck').is(':checked')) {
+							jQuery('#clickandpledge_Installment_echeck').val('');	
+							jQuery('#clickandpledge_Installment_req_echeck').hide();
+						} else {
+							jQuery('#clickandpledge_Installment_req_echeck').show();
+						}
+					});
+				});
+				function isIndefinite_echeck() {
+					if(jQuery('#clickandpledge_indefinite_echeck').is(':checked')) {
+							jQuery('#clickandpledge_Installment_echeck').val('');	
+							jQuery('#clickandpledge_Installment_req_echeck').hide();
+						} else {
+							jQuery('#clickandpledge_Installment_req_echeck').show();
+						}
+				}
+				function isRecurring_echeck() {
+					if(jQuery('#clickandpledge_isRecurring_echeck').is(':checked')) {					
+							jQuery('#clickandpledge_Periodicity_p_echeck').show();
+							jQuery('#clickandpledge_RecurringMethod_p_echeck').show();
+							if(jQuery('#clickandpledge_indefinite_echeck').length) {
+								if(jQuery('#clickandpledge_RecurringMethod_echeck').val() == 'Installment') {
+								jQuery('#clickandpledge_indefinite_echeck').attr('checked', false);
+								jQuery('#clickandpledge_indefinite_p_echeck').hide();
+								jQuery('#clickandpledge_Installment_req_echeck').show();
+								} else {
+									jQuery('#clickandpledge_indefinite_p_echeck').show();
+									jQuery('#clickandpledge_Installment_req_echeck').show();
+								}
+								//jQuery('#clickandpledge_indefinite_p').show();
+							}
+						} else {
+							jQuery('#clickandpledge_Periodicity_p_echeck').hide();
+							jQuery('#clickandpledge_RecurringMethod_p_echeck').hide();
+							if(jQuery('#clickandpledge_indefinite_echeck').length)
+								jQuery('#clickandpledge_indefinite_echeck').attr('checked', false);
+								jQuery('#clickandpledge_indefinite_p_echeck').hide();
+						}
+				}
+				</script>
+				<p class="">
+					<label for="clickandpledge_cart_type">
+					<input type="checkbox" name="clickandpledge_isRecurring_echeck" id="clickandpledge_isRecurring_echeck" onclick="isRecurring_echeck()">&nbsp;
+					<?php echo __($this->settings['RecurringLabel'], 'woocommerce') ?> </label>
+				</p>
+				<div class="clear"></div>
+				
+				<?php 
+				//print_r($this->settings);
+				if(count($this->RecurringMethod) > 0) {
+				?>
+				
+				<p class="" id="clickandpledge_RecurringMethod_p_echeck" style="display:none;">
+					<label for="clickandpledge_card_csc"><?php _e("Recurring Method", 'woocommerce') ?> <span class="required" style="color:red;">*</span></label>
+					<select id="clickandpledge_RecurringMethod_echeck" name="clickandpledge_RecurringMethod_echeck">
+						<?php foreach ($this->RecurringMethod as $r) : ?>
+									<option value="<?php echo $r ?>"><?php echo $r; ?></options>
+						<?php endforeach; ?>			
+					</select>
+				</p>
+				<script>
+					jQuery(document).ready(function(){					
+						
+						jQuery('#clickandpledge_RecurringMethod_p_echeck').hide();					
+						if(jQuery('#clickandpledge_RecurringMethod_echeck').val() == 'Installment') {
+								jQuery('#clickandpledge_indefinite_echeck').attr('checked', false);
+								jQuery('#clickandpledge_indefinite_p_echeck').hide();
+						}
+						
+						jQuery('#clickandpledge_RecurringMethod_echeck').change(function(){
+							if(jQuery('#clickandpledge_RecurringMethod_echeck').val() == 'Installment') {
+								jQuery('#clickandpledge_indefinite_echeck').attr('checked', false);
+								jQuery('#clickandpledge_indefinite_p_echeck').hide();
+								jQuery('#clickandpledge_Installment_req_echeck').show();
+							} else {
+								jQuery('#clickandpledge_indefinite_p_echeck').show();
+								jQuery('#clickandpledge_Installment_req_echeck').show();
+							}
+						});	
+						
+					});
+				</script>
+				<?php } else {				
+				?>
+				<?php foreach ($this->RecurringMethod as $r) : ?>
+					<input type="hidden" name="clickandpledge_RecurringMethod_echeck" id="clickandpledge_RecurringMethod_echeck" value="<?php echo $r;?>">
+				<?php endforeach; ?>
+				<script>
+					if(jQuery('#clickandpledge_RecurringMethod_echeck').val() == 'Installment') {
+							jQuery('#clickandpledge_indefinite_echeck').attr('checked', false);
+							jQuery('#clickandpledge_indefinite_p_echeck').hide();
+					}
+				</script>					
+				<?php
+				} ?>
+				<p class="">
+				<?php
+					if(isset($this->settings['indefinite']) && $this->settings['indefinite'] == 'yes') {
+					?>
+					<span id="clickandpledge_indefinite_p_echeck" style="display:none;">
+					&nbsp;
+					<input type="checkbox" name="clickandpledge_indefinite_echeck" id="clickandpledge_indefinite_echeck" onclick="isIndefinite_echeck()">Indefinite Recurring&nbsp;
+					</span>
+					<?php } ?>
+				</p>
+				<div class="clear"></div>
+				
+								
+				<p class="" id="clickandpledge_Periodicity_p_echeck" style="display:none;">					
+					Every <select id="clickandpledge_Periodicity_echeck" name="clickandpledge_Periodicity_echeck" class='input-text required'>
+						<?php foreach ($this->Periodicity as $p) : ?>
+									<option value="<?php echo $p ?>"><?php echo $p; ?></options>
+						<?php endforeach; ?>
+					</select>
+					<span class="required" id="clickandpledge_Installment_req_echeck">
+					&nbsp;for 
+					<input type="text" class="input-text required" id="clickandpledge_Installment_echeck" name="clickandpledge_Installment_echeck" maxlength="3" style="width:49px; margin-right:2px;" /> <font color="#FF0000">*</font> payments</span>
+					<script>
+					jQuery('#clickandpledge_Installment_echeck').keypress(function(e) {
+						var a = [];
+						var k = e.which;
+
+						for (i = 48; i < 58; i++)
+							a.push(i);
+
+						if (!(a.indexOf(k)>=0))
+							e.preventDefault();
+					});
+					</script>
+					
+				</p>
+				<div class="clear"></div>				
+				<?php }				
+				?>
+				
+				<p class="">
+					<label for="clickandpledge_echeck_AccountType"><?php echo __("Account Type", 'woocommerce') ?><span class="required" style="color:red;">*</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>					
+					<select class="input-text required" name="clickandpledge_echeck_AccountType" id="clickandpledge_echeck_AccountType">						
+						<option value="SavingsAccount">SavingsAccount</option>
+						<option value="CheckingAccount">CheckingAccount</option>
+					</select>
+				</p>
+				<div class="clear"></div>
+				<p class="">
+					<label for="clickandpledge_echeck_NameOnAccount"><?php echo __("Name On Account", 'woocommerce') ?><span class="required" style="color:red;">*</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+					<input type="text" class="input-text required" name="clickandpledge_echeck_NameOnAccount" id="clickandpledge_echeck_NameOnAccount" placeholder="Name On Account" maxlength="17"/>
+				</p>
+				<div class="clear"></div>
+				<p class="">
+					<label for="clickandpledge_echeck_IdType"><?php echo __("Type of ID", 'woocommerce') ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+					<select class="input-text required" name="clickandpledge_echeck_IdType" id="clickandpledge_echeck_IdType">
+						<option value="Driver">Driver</option>
+						<option value="Military">Military</option>
+						<option value="State">State</option>
+					</select>
+				</p>
+				<div class="clear"></div>
+				<p class="">
+					<label for="clickandpledge_echeck_CheckType"><?php echo __("Check Type", 'woocommerce') ?> <span class="required" style="color:red;">*</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+					<select class="input-text required" name="clickandpledge_echeck_CheckType" id="clickandpledge_echeck_CheckType">
+						<option value="Company">Company</option>
+						<option value="Personal">Personal</option>
+					</select>
+				</p>
+				<div class="clear"></div>
+				<p class="">
+					<label for="clickandpledge_echeck_CheckNumber"><?php echo __("Check Number", 'woocommerce') ?> <span class="required" style="color:red;">*</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+					<input type="text" class="input-text required" id="clickandpledge_echeck_CheckNumber" name="clickandpledge_echeck_CheckNumber" placeholder="Check Number" maxlength="17"/>
+				</p>
+				<div class="clear"></div>				
+				<p class="">
+					<label for="clickandpledge_echeck_RoutingNumber"><?php echo __("Routing Number", 'woocommerce') ?> <span class="required" style="color:red;">*</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+					<input type="text" class="input-text required" id="clickandpledge_echeck_RoutingNumber" name="clickandpledge_echeck_RoutingNumber" placeholder="Routing Number" maxlength="17"/>
+				</p>
+				<div class="clear"></div>
+				<p class="">
+					<label for="clickandpledge_echeck_AccountNumber"><?php echo __("Account Number", 'woocommerce') ?> <span class="required" style="color:red;">*</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+					<input type="text" class="input-text required" id="clickandpledge_echeck_AccountNumber" name="clickandpledge_echeck_AccountNumber" placeholder="Account Number" maxlength="17"/>
+				</p>
+				<div class="clear"></div>
+				<p class="">
+					<label for="clickandpledge_echeck_AccountNumber"><?php echo __("Re-Type Account Number", 'woocommerce') ?> <span class="required" style="color:red;">*</span></label>
+					<input type="text" class="input-text required" id="clickandpledge_echeck_retypeAccountNumber" name="clickandpledge_echeck_retypeAccountNumber" placeholder="Re-Type Account Number" maxlength="17"/>
+				</p>
 				<div class="clear"></div>
 				
 				
-			</fieldset>
-			<script type="text/javascript">				
-				function toggle_csc() {
-					var card_type = jQuery("#clickandpledge_card_type").val();
-					var csc = jQuery("#clickandpledge_card_csc").parent();
-			
-					if(card_type == "Visa" || card_type == "MasterCard" || card_type == "Discover" || card_type == "American Express" ) {
-						csc.fadeIn("fast");
-					} else {
-						csc.fadeOut("fast");
-					}
-					
-					if(card_type == "Visa" || card_type == "MasterCard" || card_type == "Discover") {
-						jQuery('.clickandpledge_card_csc_description').text("<?php _e('3 digits usually found on the back of the card.', 'woocommerce'); ?>");
-					} else if ( card_type == "American Express" ) {
-						jQuery('.clickandpledge_card_csc_description').text("<?php _e('4 digits usually found on the front of the card.', 'woocommerce'); ?>");
-					} else {
-						jQuery('.clickandpledge_card_csc_description').text('');
-					}
-				}
-			
-				jQuery("#clickandpledge_card_type").change(function(){
-					toggle_csc();
-				}).change();
-			
-			</script>
+				
+				<!--
+				<p class="">
+					<label for="clickandpledge_echeck_IdNumber"><?php echo __("Id Number", 'woocommerce') ?></label>
+					<input type="text" class="input-text required" id="clickandpledge_echeck_IdNumber" name="clickandpledge_echeck_IdNumber" placeholder="Id Number" maxlength="17"/>
+				</p>
+				<div class="clear"></div>
+				<p class="">
+					<label for="clickandpledge_echeck_IdStateCode"><?php echo __("Id State Code", 'woocommerce') ?></label>
+					<input type="text" class="input-text required" name="clickandpledge_echeck_IdStateCode" id="clickandpledge_echeck_IdStateCode" placeholder="Id State Code" maxlength="17"/>
+				</p>
+				<div class="clear"></div>-->
+			</div>
+			<div style="display:<?php if($this->defaultpayment == 'Invoice') echo 'block'; else echo 'none';?>;" id="cnp_Invoice_div">
+				<p class="" style="margin:0 0 10px">&nbsp;</p>
+				<p class="">
+					<label for="clickandpledge_echeck_InvoiceNumber"><?php echo __("Invoice Number", 'woocommerce') ?></label>
+					<input type="text" class="input-text required" id="clickandpledge_Invoice_InvoiceNumber" name="clickandpledge_Invoice_InvoiceNumber" placeholder="Invoice Number" maxlength="17"/>
+				</p>
+				<div class="clear"></div>
+			</div>
+			<div style="display:<?php if($this->defaultpayment == 'PurchaseOrder') echo 'block'; else echo 'none';?>;" id="cnp_PurchaseOrder_div">
+				<p class="" style="margin:0 0 10px">&nbsp;</p>
+				<p class="">
+					<label for="clickandpledge_PurchaseOrder_OrderNumber"><?php echo __("Purchase Order Number", 'woocommerce') ?></label>
+					<input type="text" class="input-text required" id="clickandpledge_PurchaseOrder_OrderNumber" name="clickandpledge_PurchaseOrder_OrderNumber" placeholder="Order Number" maxlength="17"/>
+				</p>
+				<div class="clear"></div>
+			</div>		
 			<?php
 		}
 		
@@ -999,8 +1492,7 @@ function woocommerce_clickandpledge_init() {
 			if (!$this->validate_settings()) :
 				$cancelNote = __('Order was cancelled due to invalid settings (check your API credentials and make sure your currency is supported).', 'woothemes');
 				$order->add_order_note( $cancelNote );
-		
-				$woocommerce->add_error(__('Payment was rejected due to configuration error.', 'woothemes'));
+				wc_add_notice( __( 'Payment was rejected due to configuration error.', 'woocommerce' ), 'error' );
 				return false;
 			endif;
 	
@@ -1021,13 +1513,13 @@ function woocommerce_clickandpledge_init() {
 				$posted_settings['OrderMode'] = $this->testmode;
 				
 				$posted_settings['OrganizationInformation'] = $this->settings['OrganizationInformation'];
-				$posted_settings['ThankYouMessage'] = $this->settings['ThankYouMessage'];
+				
 				$posted_settings['TermsCondition'] = $this->settings['TermsCondition'];
 			
 				$response = $request->send($posted_settings, $_POST, $order);
 			
 			} catch(Exception $e) {
-				$woocommerce->add_error(__('There was a connection error', 'woothemes') . ': "' . $e->getMessage() . '"');
+				wc_add_notice( __( 'There was a connection error', 'woocommerce' ) . ': "' . $e->getMessage() . '"', 'error' );
 				return;
 			}
 	
@@ -1046,9 +1538,9 @@ function woocommerce_clickandpledge_init() {
 				$cancelNote = __('Click & Pledge payment failed', 'woothemes') . ' (Transaction ID: ' . $response['TransactionNumber'] . '). ' . __('Payment was rejected due to an error', 'woothemes') . ': "' . $response['error'] . '". ';
 	
 				$order->add_order_note( $cancelNote );
-				
-				$woocommerce->add_error(__('Payment error', 'woothemes') . ': ' . $response['error'] . '('.$response['ResultCode'].')');
+				wc_add_notice( __( 'Payment error', 'woocommerce' ) . ': ' . $response['error'] . '('.$response['ResultCode'].')', 'error' );
 			endif;
+
 		}
 	
 	function cc_check($number) {
@@ -1115,7 +1607,7 @@ function woocommerce_clickandpledge_init() {
 	     */
 		function validate_fields() {
 			global $woocommerce;
-												
+									
 			$name_on_card 	= isset($_POST['clickandpledge_name_on_card']) ? $_POST['clickandpledge_name_on_card'] : '';
 			$billing_country 	= isset($_POST['billing_country']) ? $_POST['billing_country'] : '';
 			$card_type 			= isset($_POST['clickandpledge_card_type']) ? $_POST['clickandpledge_card_type'] : '';
@@ -1124,144 +1616,256 @@ function woocommerce_clickandpledge_init() {
 			$card_exp_month		= isset($_POST['clickandpledge_card_expiration_month']) ? $_POST['clickandpledge_card_expiration_month'] : '';
 			$card_exp_year 		= isset($_POST['clickandpledge_card_expiration_year']) ? $_POST['clickandpledge_card_expiration_year'] : '';
 			$isRecurring = 	isset($_POST['clickandpledge_isRecurring']) ? $_POST['clickandpledge_isRecurring'] : '';
-				
 			
-			if($_POST['clickandpledge_isRecurring'] == 'on') {
-				if(empty($_POST['clickandpledge_Periodicity'])) {
-						$woocommerce->add_error(__('Please select Periodicity', 'woothemes'));
-						return false;
-					}
+			$cnp_payment_method_selection = isset($_POST['cnp_payment_method_selection']) ? $_POST['cnp_payment_method_selection'] : 'CreditCard';
+			$customerrors = array();
+			if($cnp_payment_method_selection == 'CreditCard') {
+				if($_POST['clickandpledge_isRecurring'] == 'on') {
+					if(empty($_POST['clickandpledge_Periodicity'])) {
+							array_push($customerrors, 'Please select Periodicity');
+						}
+								
+					if(!$_POST['clickandpledge_indefinite']) {
+						if(empty($_POST['clickandpledge_Installment'])) {
+							if($_POST['clickandpledge_RecurringMethod'] == 'Subscription') {
+								if(!empty($this->maxrecurrings_Subscription))
+								{
+									array_push($customerrors, 'Please enter a periodicity between 2-'.$this->maxrecurrings_Subscription);									
+								} else {
+									array_push($customerrors, 'Please enter a periodicity between 2-999');
+								}
+							} else {
+								if(!empty($this->maxrecurrings_Installment))
+								{
+									array_push($customerrors, 'Please enter a periodicity between 2-'.$this->maxrecurrings_Installment);
+								} else {
+								array_push($customerrors, 'Please enter a periodicity between 2-998');
+								}
+							}							
+						}
+						if(!ctype_digit($_POST['clickandpledge_Installment'])) {
+							array_push($customerrors, 'Please enter Numbers only in instalments');
+						}
+						if($_POST['clickandpledge_Installment'] == 1) {
+							if($_POST['clickandpledge_RecurringMethod'] == 'Subscription') {
+								array_push($customerrors, 'Instalments should be greater than 2');
+							} else {
+								array_push($customerrors, 'Instalments should be greater than 2');
+							}
+						}
+						if(strlen($_POST['clickandpledge_Installment']) > 3) {
+							if($_POST['clickandpledge_RecurringMethod'] == 'Subscription') {
+								array_push($customerrors, 'Please enter a value between 2-999');
+							} else {
+								array_push($customerrors, 'Please enter a value between 2-998');
+							}
+						}
+						
+						if($_POST['clickandpledge_RecurringMethod'] == 'Subscription')
+						{						
+							if(!empty($this->maxrecurrings_Subscription) && $_POST['clickandpledge_Installment'] > $this->maxrecurrings_Subscription  )
+							{
+								array_push($customerrors, 'Please enter a value between 2-'.$this->maxrecurrings_Subscription.' only');
+							}
+						}
+						
+						if($_POST['clickandpledge_RecurringMethod'] == 'Installment')
+						{
+							if($_POST['clickandpledge_Installment'] == 999  )
+							{
+								array_push($customerrors, 'Please enter a value between 2-998');
+							}
 							
-				if(!$_POST['clickandpledge_indefinite']) {
-					if(empty($_POST['clickandpledge_Installment'])) {
-						if($_POST['clickandpledge_RecurringMethod'] == 'Subscription') {
-							if(!empty($this->maxrecurrings_Subscription))
+							if(!empty($this->maxrecurrings_Installment) && $_POST['clickandpledge_Installment'] > $this->maxrecurrings_Installment  )
 							{
-								$woocommerce->add_error(__('Please enter a value between 2-'.$this->maxrecurrings_Subscription, 'woothemes'));
-							} else {
-								$woocommerce->add_error(__('Please enter a value between 2-999', 'woothemes'));
-							}
-						} else {
-							if(!empty($this->maxrecurrings_Installment))
-							{
-								$woocommerce->add_error(__('Please enter a value between 2-'.$this->maxrecurrings_Installment, 'woothemes'));
-							} else {
-							$woocommerce->add_error(__('Please enter a value between 2-998', 'woothemes'));
+								array_push($customerrors, 'Please enter a value between 2-'.$this->maxrecurrings_Installment.' only');
 							}
 						}
-						return false;
-					}
-					if(!ctype_digit($_POST['clickandpledge_Installment'])) {
-						$woocommerce->add_error(__('Please enter Numbers only in installments', 'woothemes'));
-						return false;
-					}
-					if($_POST['clickandpledge_Installment'] == 1) {
-						if($_POST['clickandpledge_RecurringMethod'] == 'Subscription') {
-						$woocommerce->add_error(__('Installments should be greater than 2', 'woothemes'));
-						} else {
-						$woocommerce->add_error(__('Installments should be greater than 2', 'woothemes'));
+					} 
+				}
+				
+				// Name on card
+				if(empty($name_on_card)) {
+					array_push($customerrors, 'Please enter Name on Card');
+				}			
+				if (!ereg("^([a-zA-Z0-9\.\,\#\-\ \']){2,50}$", $name_on_card)) {
+					array_push($customerrors, 'Please enter the only Alphanumeric and space for Name on Card');
+				}
+				//Card Number
+				if(empty($card_number)) {
+					array_push($customerrors, 'Please enter Credit Card Number');
+				}
+				if(strlen($card_number) < 13) {
+					array_push($customerrors, 'Invalid Credit Card Number');
+				}
+				if(strlen($card_number) > 19) {
+					array_push($customerrors, 'Invalid Credit Card Number');
+				}
+				if(!$this->cc_check($card_number)) {
+					wc_add_notice( __( 'Invalid Credit Card Number', 'woocommerce' ), 'error' );
+					return false;
+				}
+				
+				//CVV
+				if(empty($card_csc)) {
+					array_push($customerrors, 'Please enter CVV');
+				}			
+				if(!ctype_digit($card_csc)) {
+					array_push($customerrors, 'Please enter Numbers only in Card Verification(CVV)');
+				}	
+				if(( strlen($card_csc) < 3 )) {
+					array_push($customerrors, 'Please enter a number at least 3 or 4 digits in card verification (CVV)');
+				}
+				
+				//Credit Card Validation					
+				$selected_card = $this->CreditCardCompany($card_number);
+				if(!in_array($selected_card, $this->available_cards))
+				{
+					array_push($customerrors, 'We are not accepting <b>'.$selected_card.'</b> type cards');
+				}
+							
+				// Check card expiration data
+				if(!ctype_digit($card_exp_month) || !ctype_digit($card_exp_year) ||
+					 $card_exp_month > 12 ||
+					 $card_exp_month < 1 ||
+					 $card_exp_year < date('Y') ||
+					 $card_exp_year > date('Y') + 20
+				) {
+					array_push($customerrors, 'Card Expiration Date is invalid');
+				}
+			} else if($cnp_payment_method_selection == 'eCheck') {
+				$clickandpledge_echeck_AccountType 	= isset($_POST['clickandpledge_echeck_AccountType']) ? $_POST['clickandpledge_echeck_AccountType'] : '';
+				$clickandpledge_echeck_NameOnAccount 	= isset($_POST['clickandpledge_echeck_NameOnAccount']) ? $_POST['clickandpledge_echeck_NameOnAccount'] : '';
+				$clickandpledge_echeck_IdType 	= isset($_POST['clickandpledge_echeck_IdType']) ? $_POST['clickandpledge_echeck_IdType'] : '';
+				$clickandpledge_echeck_CheckType 	= isset($_POST['clickandpledge_echeck_CheckType']) ? $_POST['clickandpledge_echeck_CheckType'] : '';
+				$clickandpledge_echeck_CheckNumber 	= isset($_POST['clickandpledge_echeck_CheckNumber']) ? $_POST['clickandpledge_echeck_CheckNumber'] : '';
+				$clickandpledge_echeck_RoutingNumber 	= isset($_POST['clickandpledge_echeck_RoutingNumber']) ? $_POST['clickandpledge_echeck_RoutingNumber'] : '';
+				$clickandpledge_echeck_AccountNumber 	= isset($_POST['clickandpledge_echeck_AccountNumber']) ? $_POST['clickandpledge_echeck_AccountNumber'] : '';
+				$clickandpledge_echeck_retypeAccountNumber 	= isset($_POST['clickandpledge_echeck_retypeAccountNumber']) ? $_POST['clickandpledge_echeck_retypeAccountNumber'] : '';
+				
+				
+				if($_POST['clickandpledge_isRecurring_echeck'] == 'on') {
+					if(empty($_POST['clickandpledge_Periodicity_echeck'])) {
+							array_push($customerrors, 'Please select Periodicity');
 						}
-						return false;
-					}
-					if(strlen($_POST['clickandpledge_Installment']) > 3) {
-						if($_POST['clickandpledge_RecurringMethod'] == 'Subscription') {
-						$woocommerce->add_error(__('Please enter a value between 2-999', 'woothemes'));
-						} else {
-						$woocommerce->add_error(__('Please enter a value between 2-998', 'woothemes'));
+								
+					if(!$_POST['clickandpledge_indefinite_echeck']) {
+						if(empty($_POST['clickandpledge_Installment_echeck'])) {
+							if($_POST['clickandpledge_RecurringMethod_echeck'] == 'Subscription') {
+								if(!empty($this->maxrecurrings_Subscription))
+								{
+									array_push($customerrors, 'Please enter a value between 2-'.$this->maxrecurrings_Subscription);									
+								} else {
+									array_push($customerrors, 'Please enter a value between 2-999');
+								}
+							} else {
+								if(!empty($this->maxrecurrings_Installment))
+								{
+									array_push($customerrors, 'Please enter a value between 2-'.$this->maxrecurrings_Installment);
+								} else {
+								array_push($customerrors, 'Please enter a value between 2-998');
+								}
+							}							
 						}
-						return false;
-					}
-					
-					if($_POST['clickandpledge_RecurringMethod'] == 'Subscription')
-					{						
-						if(!empty($this->maxrecurrings_Subscription) && $_POST['clickandpledge_Installment'] > $this->maxrecurrings_Subscription  )
-						{
-							$woocommerce->add_error(__('Please enter a value between 2-'.$this->maxrecurrings_Subscription.' only', 'woothemes'));
-							return false;
+						if(!ctype_digit($_POST['clickandpledge_Installment_echeck'])) {
+							array_push($customerrors, 'Please enter Numbers only in instalments');
 						}
-					}
-					
-					if($_POST['clickandpledge_RecurringMethod'] == 'Installment')
-					{
-						if($_POST['clickandpledge_Installment'] == 999  )
-						{
-							$woocommerce->add_error(__('Please enter a value between 2-998', 'woothemes'));
-							return false;
+						if($_POST['clickandpledge_Installment_echeck'] == 1) {
+							if($_POST['clickandpledge_RecurringMethod_echeck'] == 'Subscription') {
+								array_push($customerrors, 'Instalments should be greater than 2');
+							} else {
+								array_push($customerrors, 'Instalments should be greater than 2');
+							}
+						}
+						if(strlen($_POST['clickandpledge_Installment_echeck']) > 3) {
+							if($_POST['clickandpledge_RecurringMethod_echeck'] == 'Subscription') {
+								array_push($customerrors, 'Please enter a value between 2-999');
+							} else {
+								array_push($customerrors, 'Please enter a value between 2-998');
+							}
 						}
 						
-						if(!empty($this->maxrecurrings_Installment) && $_POST['clickandpledge_Installment'] > $this->maxrecurrings_Installment  )
-						{
-							$woocommerce->add_error(__('Please enter a value between 2-'.$this->maxrecurrings_Installment.' only', 'woothemes'));
-							return false;
+						if($_POST['clickandpledge_RecurringMethod_echeck'] == 'Subscription')
+						{						
+							if(!empty($this->maxrecurrings_Subscription) && $_POST['clickandpledge_Installment'] > $this->maxrecurrings_Subscription  )
+							{
+								array_push($customerrors, 'Please enter a value between 2-'.$this->maxrecurrings_Subscription.' only');
+							}
 						}
-					}
-				} 
-			}
-			
-			// Name on card
-			if(empty($name_on_card)) {
-				$woocommerce->add_error(__('Please enter Name on Card', 'woothemes'));
-				return false;
-			}			
-			if (!ereg("^([a-zA-Z0-9\.\,\#\-\ \']){2,50}$", $name_on_card)) {
-				$woocommerce->add_error(__('Please enter the only Alphanumeric and space for Name on Card', 'woothemes'));
-				return false;
-			}
-			
-			//Card Number
-			if(empty($card_number)) {
-				$woocommerce->add_error(__('Please enter Credit Card Number', 'woothemes'));
-				return false;
-			}
-			if(strlen($card_number) < 13) {
-				$woocommerce->add_error(__('Invalid Credit Card Number', 'woothemes'));
-				return false;
-			}
-			if(strlen($card_number) > 19) {
-				$woocommerce->add_error(__('Invalid Credit Card Number', 'woothemes'));
-				return false;
-			}
-			if(!$this->cc_check($card_number)) {
-				$woocommerce->add_error(__('Invalid Credit Card Number', 'woothemes'));
-				return false;
-			}
-			
-			//CVV
-			if(empty($card_csc)) {
-				$woocommerce->add_error(__('Please enter CVV', 'woothemes'));
-				return false;
-			}			
-			if(!ctype_digit($card_csc)) {
-				$woocommerce->add_error(__('Please enter Numbers only in Card Verification(CVV)', 'woothemes'));
-				return false;
-			}	
-			if(( strlen($card_csc) < 3 )) {
-				$woocommerce->add_error(__('Please enter a number at least 3 or 4 digits in card verification (CVV)', 'woothemes'));
-				return false;
-			}
-			
-			//Credit Card Validation					
-			$selected_card = $this->CreditCardCompany($card_number);
-			if(!in_array($selected_card, $this->available_cards))
-			{
-				$woocommerce->add_error(__('We are not accepting <b>'.$selected_card.'</b> type cards', 'woothemes'));
-				return false;
-			}
 						
-			// Check card expiration data
-			if(!ctype_digit($card_exp_month) || !ctype_digit($card_exp_year) ||
-				 $card_exp_month > 12 ||
-				 $card_exp_month < 1 ||
-				 $card_exp_year < date('Y') ||
-				 $card_exp_year > date('Y') + 20
-			) {
-				$woocommerce->add_error(__('Card Expiration Date is invalid', 'woothemes'));
-				return false;
+						if($_POST['clickandpledge_RecurringMethod_echeck'] == 'Installment')
+						{
+							if($_POST['clickandpledge_Installment_echeck'] == 999  )
+							{
+								array_push($customerrors, 'Please enter a value between 2-998');
+							}
+							
+							if(!empty($this->maxrecurrings_Installment) && $_POST['clickandpledge_Installment_echeck'] > $this->maxrecurrings_Installment  )
+							{
+								array_push($customerrors, 'Please enter a value between 2-'.$this->maxrecurrings_Installment.' only');
+							}
+						}
+					} 
+				}
+				
+				if(empty($clickandpledge_echeck_AccountType)) {
+					array_push($customerrors, 'Please select Account Type');
+				}
+				
+				$clickandpledge_echeck_NameOnAccount_regexp = "/^([a-zA-Z0-9 ]){0,100}$/";
+				if(empty($clickandpledge_echeck_NameOnAccount)) {
+					array_push($customerrors, 'Please enter Name On Account');
+				}				
+				else if(!preg_match($clickandpledge_echeck_NameOnAccount_regexp, $clickandpledge_echeck_NameOnAccount)) {
+					array_push($customerrors, 'Invalid Name On Account.');
+				}
+				
+				if(empty($clickandpledge_echeck_IdType)) {
+					array_push($customerrors, 'Please select Type of ID');
+				}
+				if(empty($clickandpledge_echeck_CheckType)) {
+					array_push($customerrors, 'Please select Check Type');
+				}
+				
+				$clickandpledge_echeck_CheckNumber_regexp = "/^([a-zA-Z0-9]){1,10}$/";
+				if(empty($clickandpledge_echeck_CheckNumber)) {
+					array_push($customerrors, 'Please enter Check Number');
+				}				
+				else if(!preg_match($clickandpledge_echeck_CheckNumber_regexp, $clickandpledge_echeck_CheckNumber)) {
+					array_push($customerrors, 'Invalid Check Number');
+				}	
+				
+				$clickandpledge_echeck_RoutingNumber_regexp = "/^([a-zA-Z0-9]){9}$/";
+				if(empty($clickandpledge_echeck_RoutingNumber)) {
+					array_push($customerrors, 'Please enter Routing Number');
+				}				
+				else if(!preg_match($clickandpledge_echeck_RoutingNumber_regexp, $clickandpledge_echeck_RoutingNumber)) {
+					array_push($customerrors, 'Invalid Routing Number');
+				}
+				
+				$clickandpledge_echeck_AccountNumber_regexp = "/^([a-zA-Z0-9]){1,17}$/";
+				if(empty($clickandpledge_echeck_AccountNumber)) {
+					array_push($customerrors, 'Please enter Account Number');
+				}				
+				else if(!preg_match($clickandpledge_echeck_AccountNumber_regexp, $clickandpledge_echeck_AccountNumber)) {
+					array_push($customerrors, 'Invalid Account Number');
+				}
+				
+				if(empty($clickandpledge_echeck_retypeAccountNumber)) {
+					array_push($customerrors, 'Please enter Account Number Again');
+				}
+				else if($clickandpledge_echeck_AccountNumber != $clickandpledge_echeck_retypeAccountNumber) {
+					array_push($customerrors, 'Please enter same Account Number Again');
+				}								
 			}
-			
-			
-	
-			return true;
+			if(count($customerrors) > 0) {
+				foreach($customerrors as $err) {
+					wc_add_notice( __( $err, 'woocommerce' ), 'error' );
+				}
+				return false;
+			} else {
+				return true;
+			}
 		}
 		
 		/**
@@ -1310,7 +1914,6 @@ function woocommerce_clickandpledge_init() {
 	function add_clickandpledge_gateway($methods) {
 		$methods[] = 'WC_Gateway_ClickandPledge';
 		return $methods;
-	}
-	
+	}	
 	add_filter('woocommerce_payment_gateways', 'add_clickandpledge_gateway' );
 } 
