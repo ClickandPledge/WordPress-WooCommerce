@@ -632,7 +632,7 @@ class clickandpledge_request {
 				}
 			}
 			$shiptitle = $shiptitle->title;	
-			$shipping_method=$dom->createElement('ShippingMethod',$shiptitle);
+			$shipping_method=$dom->createElement('ShippingMethod',$this->safeString($shiptitle,50));
 			$shipping_method=$shipping->appendChild($shipping_method);
 			//print_r($shipp);
 			if( isset($params['clickandpledge_isRecurring']) &&  $params['clickandpledge_isRecurring'] == 'on' ) {
