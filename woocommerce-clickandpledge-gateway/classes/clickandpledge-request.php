@@ -149,7 +149,7 @@ class clickandpledge_request {
 		$applicationname=$dom->createElement('Name','CnP_WooCommerce_WordPress'); //CnP_CiviCRM_WordPress#CnP_CiviCRM_Joomla#CnP_CiviCRM_Drupal
 		$applicationid=$application->appendChild($applicationname);
 
-		$applicationversion=$dom->createElement('Version','3.000.000.000.20150320');  //2.000.000.000.20130103 Version-Minor change-Bug Fix-Internal Release Number -Release Date(YYYYMMDD)
+		$applicationversion=$dom->createElement('Version','1.3.2.000.20150323');  //2.000.000.000.20130103 Version-Minor change-Bug Fix-Internal Release Number -Release Date(YYYYMMDD)
 		$applicationversion=$application->appendChild($applicationversion);
 
 		$request = $dom->createElement('Request', '');
@@ -161,8 +161,10 @@ class clickandpledge_request {
 		$operationtype=$dom->createElement('OperationType','Transaction');
 		$operationtype=$operation->appendChild($operationtype);
 		
+		if($this->get_user_ip() != '') {
 		$ipaddress=$dom->createElement('IPAddress',$this->get_user_ip());
 		$ipaddress=$operation->appendChild($ipaddress);
+		}
 		
 		$httpreferrer=$dom->createElement('UrlReferrer',$_SERVER['HTTP_REFERER']);
 		$httpreferrer=$operation->appendChild($httpreferrer);
@@ -532,9 +534,9 @@ class clickandpledge_request {
 			//echo $variation_pdetails->get_sale_price();
 			//die('ggggggggggggggggg');			
 			if(isset($Item['variation_id']) && $Item['variation_id'] != 0) {
-				$line_subtotal = $variation_pdetails->get_sale_price();
+				$line_subtotal = $variation_pdetails->get_price();
 			} else {
-				$line_subtotal = $pdetails->get_sale_price();
+				$line_subtotal = $pdetails->get_price();
 			}
 			//echo ($this->number_format(($line_subtotal/$params['clickandpledge_Installment']),2,'.','')*100);
 			//die('ooooooooooooooo');
