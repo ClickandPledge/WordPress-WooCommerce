@@ -592,7 +592,7 @@ class clickandpledge_request {
 				$sku = $variation_pdetails->get_sku();
 			}
 			if( $sku != '' ) {			
-				$sku_code=$dom->createElement('SKU',substr($sku, 0, 25));
+				$sku_code=$dom->createElement('SKU',$this->safeString($sku, 25));
 				$sku_code=$orderitem->appendChild($sku_code);
 			}
 
