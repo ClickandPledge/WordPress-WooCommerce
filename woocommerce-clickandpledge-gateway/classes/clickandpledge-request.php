@@ -149,7 +149,7 @@ class clickandpledge_request {
 		$applicationname=$dom->createElement('Name','CnP_WooCommerce_WordPress'); //CnP_CiviCRM_WordPress#CnP_CiviCRM_Joomla#CnP_CiviCRM_Drupal
 		$applicationid=$application->appendChild($applicationname);
 
-		$applicationversion=$dom->createElement('Version','1.3.2.000.20150323');  //2.000.000.000.20130103 Version-Minor change-Bug Fix-Internal Release Number -Release Date(YYYYMMDD)
+		$applicationversion=$dom->createElement('Version','1.3.3.000.20150428');  //2.000.000.000.20130103 Version-Minor change-Bug Fix-Internal Release Number -Release Date(YYYYMMDD)
 		$applicationversion=$application->appendChild($applicationversion);
 
 		$request = $dom->createElement('Request', '');
@@ -537,6 +537,9 @@ class clickandpledge_request {
 				$line_subtotal = $variation_pdetails->get_price();
 			} else {
 				$line_subtotal = $pdetails->get_price();
+			}
+			if($line_subtotal == '') { //This will handle when donations are used
+				$line_subtotal = $Item['line_total'];
 			}
 			//echo ($this->number_format(($line_subtotal/$params['clickandpledge_Installment']),2,'.','')*100);
 			//die('ooooooooooooooo');
