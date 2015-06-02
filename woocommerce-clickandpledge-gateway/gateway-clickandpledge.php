@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Click & Pledge Gateway
 Plugin URI: http://manual.clickandpledge.com/
 Description: With Click & Pledge, Accept all major credit cards directly on your WooCommerce website with a seamless and secure checkout experience.<a href="http://manual.clickandpledge.com/" target="_blank">Click Here</a> to get a Click & Pledge account.
-Version: 1.3.3
+Version: 1.3.4
 Author: Click & Pledge
 Author URI: http://www.clickandpledge.com
 */

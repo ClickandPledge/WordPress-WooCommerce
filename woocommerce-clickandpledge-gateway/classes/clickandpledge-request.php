@@ -149,7 +149,7 @@ class clickandpledge_request {
 		$applicationname=$dom->createElement('Name','CnP_WooCommerce_WordPress'); //CnP_CiviCRM_WordPress#CnP_CiviCRM_Joomla#CnP_CiviCRM_Drupal
 		$applicationid=$application->appendChild($applicationname);
 
-		$applicationversion=$dom->createElement('Version','1.3.3.000.20150428');  //2.000.000.000.20130103 Version-Minor change-Bug Fix-Internal Release Number -Release Date(YYYYMMDD)
+		$applicationversion=$dom->createElement('Version','1.3.4.000.20150602');  //2.000.000.000.20130103 Version-Minor change-Bug Fix-Internal Release Number -Release Date(YYYYMMDD)
 		$applicationversion=$application->appendChild($applicationversion);
 
 		$request = $dom->createElement('Request', '');
@@ -522,7 +522,7 @@ class clickandpledge_request {
 			$itemid=$dom->createElement('ItemID',++$items);
 			$itemid=$orderitem->appendChild($itemid);
 
-			$itemname=$dom->createElement('ItemName',$this->safeString(trim($Item['name']), 50));
+			$itemname=$dom->createElement('ItemName',$this->safeString(trim($Item['name']), 100));
 			$itemname=$orderitem->appendChild($itemname);
 
 			$quntity=$dom->createElement('Quantity',$Item['qty']);
