@@ -538,7 +538,7 @@ class clickandpledge_request {
 			} else {
 				$line_subtotal = $pdetails->get_price();
 			}
-			if($line_subtotal == '') { //This will handle when donations are used
+			if($line_subtotal == '' || $line_subtotal == 0) { //This will handle when donations are used
 				$line_subtotal = $Item['line_total'];
 			}
 			//echo ($this->number_format(($line_subtotal/$params['clickandpledge_Installment']),2,'.','')*100);
